@@ -1,0 +1,16 @@
+---
+import { BOX, boxItems, dlShort, isNew } from '../lib/downloads';
+const items = boxItems();
+---
+{BOX.show && items.length > 0 && (
+  <div class="card dlbox">
+    <div class="sh"><h2>{BOX.title || 'Latest downloads'}</h2><span class="trace"></span><a href="/downloads/">All</a></div>
+    {items.map((d) => (
+      <a class="dl" href={d.page} target="_blank" rel="noopener" data-date={d.date}>
+        <span class="n">{d.name}{isNew(d) && <b class="new">New</b>}</span>
+        <span class="v">{d.version || 'Checking…'}</span>
+        <time>{dlShort(d.date)}</time>
+      </a>
+    ))}
+  </div>
+)}

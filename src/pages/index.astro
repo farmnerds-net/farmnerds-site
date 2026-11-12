@@ -3,6 +3,7 @@ import Base from '../layouts/Base.astro';
 import Thumb from '../components/Thumb.astro';
 import FeedItem from '../components/FeedItem.astro';
 import ReviewList from '../components/ReviewList.astro';
+import DownloadsBox from '../components/DownloadsBox.astro';
 import { allPosts, CATS, fmtDay, fmtShort, readTime } from '../lib/posts';
 import lab from '../data/farmlab.json';
 
@@ -52,6 +53,7 @@ const pct = Math.round((lab.storageUsed / lab.storageTotal) * 100);
           <div class="sh c-fl"><h2>Reviews</h2><span class="trace"></span><a href="/reviews/">All</a></div>
           <ReviewList reviews={reviews} />
         </div>
+        <DownloadsBox />
         {lab.show && (
           <div class="card">
             <div class="sh"><h2>The FarmLab</h2><span class="trace"></span></div>

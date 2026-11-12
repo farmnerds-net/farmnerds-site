@@ -23,6 +23,14 @@ In the write-up, every *Heading 2* starts a new page of the review. If a scored 
 
 The posts whose web addresses start with `sample-` are placeholders with made-up content. Delete them in the editor once real posts exist. The numbers in the FarmLab box on the homepage are also placeholders. Change or hide them under **FarmLab box**.
 
+### Downloads
+
+The **Downloads** page lists the newest GPU drivers, homelab software and bench tools, and links straight to each maker's own download page (we never host files). A free GitHub job checks every maker about every 15 minutes and saves any new version, and the site rebuilds by itself. You can watch it, or run it right away, under the repo's **Actions** tab, "Check downloads".
+
+In the editor, **Downloads** lets you pick what shows in the homepage sidebar box and in what order. If a version is ever stuck or wrong (AMD's site sometimes blocks the checker), use **Fix version** there. To track something new, add an entry to `scripts/downloads/sources.mjs`.
+
+GitHub pauses scheduled jobs in a repo that has had no activity for 60 days. The checker's own saves count as activity, but if it ever stops, open the Actions tab and turn it back on.
+
 ## Where things live
 
 | What | Where |
@@ -31,6 +39,9 @@ The posts whose web addresses start with `sample-` are placeholders with made-up
 | Reviews | `src/content/reviews/` |
 | Uploaded photos | `public/uploads/` |
 | FarmLab stats box | `src/data/farmlab.json` |
+| Downloads list (updated automatically) | `src/data/downloads.json` |
+| Downloads sidebar box picks | `src/data/downloads-box.json` |
+| What the Downloads page tracks, and how each is checked | `scripts/downloads/sources.mjs` |
 | Pages (home, About, Support) | `src/pages/` |
 | Look and feel | `src/styles/global.css` |
 | Editor screens | `public/admin/` |

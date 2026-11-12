@@ -1,0 +1,5 @@
+{
+  "show": true,
+  "title": "Latest downloads",
+  "items": ["nvidia-geforce", "amd-adrenalin", "intel-arc", "proxmox-ve", "truenas", "home-assistant-os", "plex"]
+}

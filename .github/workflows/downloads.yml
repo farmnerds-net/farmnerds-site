@@ -1,0 +1,47 @@
+# Keeps the Downloads page up to date. Every 15 minutes GitHub runs the checker, and if a vendor
+# has put out something new it saves the new version. Cloudflare then rebuilds the site by itself.
+# Free for public repos. You can also run it right now from the Actions tab: "Check downloads" > "Run workflow".
+name: Check downloads
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+  pull_request:
+    paths: ['scripts/downloads/**', '.github/workflows/downloads.yml']
+
+permissions:
+  contents: write
+
+concurrency:
+  group: check-downloads
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # On a pull request this only prints what it finds, so changes to the checker can be tried safely.
+      - name: Ask each vendor for its newest version
+        id: check
+        run: node scripts/downloads/check.mjs ${{ github.event_name == 'pull_request' && '--dry' || '' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Save new versions
+        if: github.event_name != 'pull_request'
+        run: |
+          if git diff --quiet; then echo "Nothing new."; exit 0; fi
+          git config user.name "farmnerds-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -am "Downloads: ${SUMMARY}"
+          for i in 1 2 3; do git pull --rebase -q && git push && exit 0; sleep 5; done
+          exit 1
+        env:
+          SUMMARY: ${{ steps.check.outputs.summary }}
