@@ -61,10 +61,10 @@
       "group": "Homelab & servers",
       "note": "ISO installer",
       "page": "https://www.proxmox.com/en/downloads/proxmox-virtual-environment/iso",
-      "version": "",
+      "version": "9.2-1",
       "date": "",
       "url": "",
-      "found": ""
+      "found": "2026-11-12T03:20:51.889Z"
     },
     {
       "id": "proxmox-backup",
@@ -73,10 +73,10 @@
       "group": "Homelab & servers",
       "note": "ISO installer",
       "page": "https://www.proxmox.com/en/downloads/proxmox-backup-server/iso",
-      "version": "",
+      "version": "4.2-1",
       "date": "",
       "url": "",
-      "found": ""
+      "found": "2026-11-12T03:20:51.889Z"
     },
     {
       "id": "truenas",
