@@ -1,0 +1,14 @@
+---
+// One trust stamp: the shape, plus its name unless `iconOnly`. See src/lib/stamps.ts.
+import type { Stamp } from '../lib/stamps';
+interface Props { stamp: Stamp; iconOnly?: boolean; size?: number }
+const { stamp, iconOnly = false, size } = Astro.props;
+---
+{iconOnly ? (
+  <svg class={`stamp-ico st-${stamp.id}`} viewBox="0 0 24 24" width={size} height={size} role="img" aria-label={stamp.label} set:html={`<title>${stamp.label}</title>${stamp.svg}`} />
+) : (
+  <span class={`stamp st-${stamp.id}`} title={stamp.meaning}>
+    <svg class="stamp-ico" viewBox="0 0 24 24" aria-hidden="true" set:html={stamp.svg} />
+    {stamp.label}
+  </span>
+)}

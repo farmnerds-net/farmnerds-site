@@ -1,6 +1,8 @@
 ---
 import Base from '../../layouts/Base.astro';
 import { GROUPS, DOWNLOADS, dlDate, isNew } from '../../lib/downloads';
+import { STAMPS, stampFor } from '../../lib/stamps';
+import Stamp from '../../components/Stamp.astro';
 const groups = GROUPS.map((g) => ({ g, items: DOWNLOADS.filter((d) => d.group === g) })).filter((x) => x.items.length);
 const desc = 'The newest GPU drivers, homelab software and bench tools, checked against each maker every 15 minutes.';
 ---
@@ -8,13 +10,33 @@ const desc = 'The newest GPU drivers, homelab software and bench tools, checked 
   <div class="stack">
     <div class="pagehead"><span class="chip">Downloads</span><h1>Downloads</h1>
       <p>{desc} Every link goes to the maker's own servers, so you always get the real file.</p></div>
+    <section class="card compass" aria-labelledby="compass-h">
+      <div class="sh">
+        <svg class="compass-rose" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10.2"/><path class="n" d="M12 3.6l2.3 8.4H9.7z"/><path class="s" d="M12 20.4l-2.3-8.4h4.6z"/><circle class="hub" cx="12" cy="12" r="1.4"/></svg>
+        <h2 id="compass-h">Trust compass</h2><span class="trace"></span>
+      </div>
+      <p class="compass-lede">When we've put something through its paces ourselves, it gets a stamp. Here's what each one means.</p>
+      <ul class="compass-list">
+        {STAMPS.map((s) => (
+          <li class={`st-${s.id}`}>
+            <Stamp stamp={s} iconOnly size={44} />
+            <div>
+              <b>{s.label}</b>
+              <span class="kind">{s.color} {s.shape}</span>
+              <p>{s.meaning}</p>
+            </div>
+          </li>
+        ))}
+      </ul>
+      <p class="compass-foot">No stamp just means we haven't tested it yet. Every download here still comes straight from its maker.</p>
+    </section>
     {groups.map(({ g, items }) => (
       <section class="card dlgroup">
         <div class="sh"><h2>{g}</h2><span class="trace"></span></div>
         <div class="dltable">
-          {items.map((d) => (
-            <div class="dlrow" data-date={d.date}>
-              <div class="who"><b>{d.name}</b>{isNew(d) && <span class="new">New</span>}<small>{d.vendor} · {d.note}</small></div>
+          {items.map((d) => { const st = stampFor(d.id); return (
+            <div class={st ? `dlrow stamped st-${st.id}` : 'dlrow'} data-date={d.date}>
+              <div class="who"><b>{d.name}</b>{isNew(d) && <span class="new">New</span>}<small>{d.vendor} · {d.note}</small>{st && <Stamp stamp={st} />}</div>
               <div class="ver"><span>Version</span>{d.version || 'Checking…'}</div>
               <div class="when"><span>Released</span>{d.date ? <time datetime={d.date}>{dlDate(d.date)}</time> : '—'}</div>
               <div class="go">
@@ -31,7 +53,7 @@ const desc = 'The newest GPU drivers, homelab software and bench tools, checked 
                 )}
               </div>
             </div>
-          ))}
+          ); })}
         </div>
       </section>
     ))}

@@ -460,10 +460,25 @@ h('div', { class: 'col side' },
     dirty = false;
   }
 
+  /* ---------- Trust stamps (same shapes as src/lib/stamps.ts; change both together) ---------- */
+  const ring = (n, R, r, cx, cy, turn) => Array.from({ length: n * 2 }, (_, i) => { const d = i % 2 ? r : R, a = (Math.PI * i) / n - Math.PI / 2; return `${(cx + d * Math.cos(a)).toFixed(2)},${(cy + d * Math.sin(a)).toFixed(2)}`; }).join(' ');
+  const STAMPS = [
+    { id: 'approved', label: 'FarmNerds Approved', hint: 'Our highest trust. We run it ourselves.',
+      svg: `<polygon class="s-fill s-ring" points="${ring(16, 11.6, 10.2, 12, 12)}"/><circle class="s-line" cx="12" cy="12" r="7.6"/><path class="s-glyph" d="M8.4 12.3l2.4 2.4 4.8-5"/>` },
+    { id: 'tested', label: 'Lab Tested', hint: 'We installed this release on our gear and it worked.',
+      svg: '<path class="s-fill s-ring" d="M12 1.6l9 3.4v6.2c0 5.6-3.8 9.7-9 11.2-5.2-1.5-9-5.6-9-11.2V5z"/><path class="s-glyph" d="M8 8.6h8M8 12h8M8 15.4h8"/>' },
+    { id: 'pick', label: 'Nerd Pick', hint: 'A favorite of ours, worth a look.',
+      svg: `<path class="s-fill s-ring" d="M8.2 13.2L5.6 22.4l3.4-1.6 1.9 2.8 1.6-8.6zM15.8 13.2l2.6 9.2-3.4-1.6-1.9 2.8-1.6-8.6z"/><circle class="s-fill s-ring" cx="12" cy="9" r="7.4"/><polygon class="s-dot" points="${ring(5, 4.2, 1.8, 12, 9.3)}"/>` },
+    { id: 'caution', label: 'Hold Off', hint: 'Known problems in this release.',
+      svg: '<path class="s-fill s-ring" d="M12 2.2l10.4 18.6H1.6z"/><path class="s-glyph" d="M12 8.6v5.6"/><circle class="s-dot" cx="12" cy="17.4" r="1.3"/>' },
+  ];
+  const stampIcon = (st) => { const w = h('span', { class: `sticon st-${st.id}` }); w.innerHTML = `<svg viewBox="0 0 24 24" aria-hidden="true">${st.svg}</svg>`; return w; };
+
   /* ---------- Downloads box ---------- */
   async function showDownloads() {
     app.replaceChildren(h('p', { class: 'muted center' }, 'Loading…'));
-    const { list, box, boxSha } = await api('downloads');
+    const { list, box, boxSha, stamps: savedStamps } = await api('downloads');
+    const stamps = { ...(savedStamps || {}) };
     const items = list.items || [];
     const byId = new Map(items.map((i) => [i.id, i]));
     let picks = (box.items || []).filter((id) => byId.has(id));
@@ -492,9 +507,21 @@ h('div', { class: 'col side' },
           h('label', { class: 'f' }, 'Release notes link (optional)', h('input', { type: 'url', value: f.url, placeholder: 'https://', oninput: (e) => (f.url = e.target.value) })),
           h('label', { class: 'f' }, h('span', {}, 'Direct download link (optional) ', h('small', {}, 'The file itself, on the maker\'s site. Leave empty to send people to their download page.')), h('input', { type: 'url', value: f.file, placeholder: 'https://', oninput: (e) => (f.file = e.target.value) })),
           h('label', { class: 'f' }, 'What the file is', h('input', { type: 'text', value: f.fileLabel, placeholder: 'Windows installer', maxLength: 40, oninput: (e) => (f.fileLabel = e.target.value) })));
+        // Stamp picker: one box per stamp, plus "No stamp". Picking one marks it and shows it next to the name.
+        const now = h('span', { class: 'stnow' });
+        const picker = h('div', { class: 'stpick', role: 'radiogroup', 'aria-label': `Stamp for ${i.name}` });
+        const drawStamp = () => {
+          const cur = STAMPS.find((st) => st.id === stamps[i.id]);
+          now.replaceChildren(...(cur ? [stampIcon(cur)] : []));
+          picker.replaceChildren(...[{ id: '', label: 'No stamp', hint: 'Not tested by us yet.' }, ...STAMPS].map((st) =>
+            h('button', { type: 'button', role: 'radio', class: `stopt${st.id ? ' st-' + st.id : ''}`, 'aria-checked': String((stamps[i.id] || '') === st.id), title: st.hint,
+              onclick: () => { if (st.id) stamps[i.id] = st.id; else delete stamps[i.id]; dirty = true; drawStamp(); } },
+              st.id ? stampIcon(st) : h('span', { class: 'sticon none' }, '–'), h('span', {}, st.label))));
+        };
+        drawStamp();
         return h('div', { class: 'dli' },
-          h('label', { class: 'check' }, tick, h('span', {}, h('b', {}, i.name), h('small', {}, `${i.version || 'not checked yet'}${i.date ? ' · ' + fmtDate(i.date) : ''} · ${i.file ? 'direct download' : 'links to vendor page'}`))),
-          h('button', { type: 'button', class: 'linkbtn', onclick: () => (fixBox.hidden = !fixBox.hidden) }, 'Fix version'), fixBox);
+          h('label', { class: 'check' }, tick, h('span', {}, h('b', {}, i.name, now), h('small', {}, `${i.version || 'not checked yet'}${i.date ? ' · ' + fmtDate(i.date) : ''} · ${i.file ? 'direct download' : 'links to vendor page'}`))),
+          h('button', { type: 'button', class: 'linkbtn', onclick: () => (fixBox.hidden = !fixBox.hidden) }, 'Fix version'), picker, fixBox);
       }))));
     }
     const btn = h('button', { type: 'button', class: 'btn primary', onclick: async () => {
@@ -502,7 +529,7 @@ h('div', { class: 'col side' },
       try {
         const changed = {};
         for (const [id, f] of Object.entries(fixes)) { const i = byId.get(id); if (f.version !== i.version || f.date !== (i.date || '').slice(0, 10) || f.url !== (i.url || '') || f.file !== (i.file || '') || f.fileLabel !== (i.fileLabel || '')) changed[id] = f; }
-        const r = await api('downloads', { method: 'PUT', body: { box: { show: true, title: title.value, items: picks }, boxSha: sha, fixes: changed } });
+        const r = await api('downloads', { method: 'PUT', body: { box: { show: true, title: title.value, items: picks }, boxSha: sha, fixes: changed, stamps } });
         sha = r.boxSha; dirty = false;
         toast(r.fixed ? `Saved, and fixed ${r.fixed} version${r.fixed > 1 ? 's' : ''}. The site updates in about a minute.` : 'Saved. The site updates in about a minute.');
       } catch (ex) { toast(ex.message, true); }
@@ -517,6 +544,7 @@ h('div', { class: 'col side' },
           h('label', { class: 'f' }, 'Box title', title), order),
         h('div', { class: 'card' }, h('h2', {}, 'Everything we track'),
           h('p', { class: 'hint' }, 'Versions update by themselves about every 15 minutes. If one is stuck or wrong, use Fix version. The next automatic check takes over again once something newer comes out.'),
+          h('p', { class: 'hint' }, 'Tap a stamp under any download to put it on the Downloads page. The Trust compass at the top of that page explains each one to visitors. Stamps stay put when a new version comes out, so switch to Hold Off if a release turns out bad.'),
           all)));
     dirty = false;
   }

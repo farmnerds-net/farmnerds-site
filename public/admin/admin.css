@@ -1,7 +1,7 @@
 /* FarmNerds editor. Same colors and type as the public site. */
 :root{
   --bg:#0f1519; --surface:#161f25; --surface2:#1d2930; --line:#293841; --fg:#e7eef0; --muted:#8ea2ab;
-  --accent:#5fc27b; --accent-ink:#0b1a10; --ember:#f0883e; --good:#6fcf8e; --bad:#ef7d6c;
+  --accent:#5fc27b; --accent-ink:#0b1a10; --ember:#f0883e; --tech:#6fb0e6; --gold:#e9b949; --ring:#ffffff; --st-ink:#0b1a10; --good:#6fcf8e; --bad:#ef7d6c;
   --display:"Chakra Petch","Segoe UI",system-ui,sans-serif;
   --body:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
   --mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
@@ -9,10 +9,10 @@
 }
 @media (prefers-color-scheme:light){:root:not([data-theme="dark"]){
   --bg:#f5efe0; --surface:#fdf9ee; --surface2:#f0e9d6; --line:#ddd3bb; --fg:#1b241c; --muted:#5d6557;
-  --accent:#1f7a41; --accent-ink:#ffffff; --ember:#c25a12; --good:#22804a; --bad:#c2402e; color-scheme:light}}
+  --accent:#1f7a41; --accent-ink:#ffffff; --ember:#c25a12; --tech:#2a6fb0; --gold:#9c6b06; --ring:#1b241c; --st-ink:#ffffff; --good:#22804a; --bad:#c2402e; color-scheme:light}}
 :root[data-theme="light"]{
   --bg:#f5efe0; --surface:#fdf9ee; --surface2:#f0e9d6; --line:#ddd3bb; --fg:#1b241c; --muted:#5d6557;
-  --accent:#1f7a41; --accent-ink:#ffffff; --ember:#c25a12; --good:#22804a; --bad:#c2402e; color-scheme:light}
+  --accent:#1f7a41; --accent-ink:#ffffff; --ember:#c25a12; --tech:#2a6fb0; --gold:#9c6b06; --ring:#1b241c; --st-ink:#ffffff; --good:#22804a; --bad:#c2402e; color-scheme:light}
 
 *{box-sizing:border-box}
 [hidden]{display:none!important}
@@ -159,3 +159,19 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent);outline:0}
 .bxtype:hover:not(:disabled){border-color:var(--accent)}
 .bxtype:disabled{opacity:.55;cursor:default}
 @media (max-width:560px){.bx-head{grid-template-columns:22px minmax(0,1fr) auto auto auto auto;gap:6px;padding:8px}.bx-head .hide-s{display:none}.bx-name small{display:none}}
+
+/* Trust stamps */
+.st-approved{--st:var(--accent)} .st-tested{--st:var(--tech)} .st-pick{--st:var(--gold)} .st-caution{--st:var(--ember)}
+.sticon{display:inline-flex;width:20px;height:20px;flex:none;align-items:center;justify-content:center}
+.sticon svg{width:100%;height:100%;overflow:visible}
+.sticon .s-fill{fill:var(--st)} .sticon .s-ring{stroke:var(--ring);stroke-width:1.3;stroke-linejoin:round}
+.sticon .s-line{fill:none;stroke:var(--st-ink);stroke-width:1;stroke-dasharray:1.4 1.2;opacity:.7}
+.sticon .s-glyph{fill:none;stroke:var(--st-ink);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round} .sticon .s-dot{fill:var(--st-ink)}
+.sticon.none{color:var(--muted);font-weight:700}
+.dli .check .stnow,.dli .check .sticon{display:inline-flex;flex-direction:row}
+.stnow .sticon{width:18px;height:18px;margin-left:7px;vertical-align:-3px}
+.stpick{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:6px}
+.stopt{display:inline-flex;align-items:center;gap:6px;padding:5px 10px 5px 6px;border-radius:999px;border:1px solid var(--line);background:none;color:var(--muted);
+  font:600 12px var(--body);cursor:pointer}
+.stopt:hover{border-color:var(--st,var(--muted));color:var(--fg)}
+.stopt[aria-checked="true"]{border:2px solid var(--st,var(--fg));padding:4px 9px 4px 5px;color:var(--st,var(--fg));background:color-mix(in srgb,var(--st,var(--fg)) 12%,transparent)}
