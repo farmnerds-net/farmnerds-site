@@ -40,10 +40,12 @@ npm run dev      # preview at http://localhost:4321
 npm run build    # production build into dist/
 ```
 
-## Hosting on Cloudflare Pages
+## Hosting on Cloudflare
 
-1. In the Cloudflare dashboard, create a Pages project connected to this repo.
-2. Build command: `npm run build`. Output folder: `dist`.
-3. Add `farmnerds.net` as a custom domain on the project.
+1. In the Cloudflare dashboard go to **Workers & Pages** and select **Create application**.
+2. Choose **GitHub** and pick this repo.
+3. Keep the project name `farmnerds-site` (it must match the name in `wrangler.jsonc`). Build command: `npm run build`. Deploy command: `npx wrangler deploy`.
+4. Select **Save and Deploy**. The site appears at a `workers.dev` address.
+5. To use the real domain, open the project's **Settings**, then **Domains & Routes**, and add `farmnerds.net`.
 
 The editor signs in through GitHub. Until a sign-in helper is set up, use "Sign in with token" on the editor's login screen with a GitHub personal access token that can write to this repo.
