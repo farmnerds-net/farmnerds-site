@@ -1,0 +1,8 @@
+---
+import { seed } from '../lib/posts';
+interface Props { post: any; n?: number }
+const { post, n } = Astro.props;
+---
+{post.data.image
+  ? <img src={post.data.image} alt="" loading="lazy" />
+  : <canvas class="art" data-seed={seed(post.id)} data-n={n}></canvas>}

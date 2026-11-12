@@ -1,0 +1,259 @@
+# Web editor settings (Sveltia CMS). Open https://farmnerds.net/admin/ to write and publish.
+backend:
+  name: github
+  repo: farmnerds-net/farmnerds-site
+  branch: main
+site_url: https://farmnerds.net
+media_folder: public/uploads
+public_folder: /uploads
+collections:
+- name: articles
+  label: Articles
+  label_singular: Article
+  folder: src/content/articles
+  create: true
+  slug: '{{slug}}'
+  fields:
+  - label: Title
+    name: title
+    widget: string
+  - label: Short summary
+    name: description
+    widget: text
+    required: false
+    hint: One or two sentences shown on the homepage and in search results.
+  - label: Publish date
+    name: date
+    widget: datetime
+  - label: Section
+    name: category
+    widget: select
+    default: tech
+    options:
+    - label: Tech
+      value: tech
+    - label: Homelab
+      value: homelab
+    - label: Homestead
+      value: homestead
+    - label: FarmLabs
+      value: farmlabs
+  - label: Cover photo
+    name: image
+    widget: image
+    required: false
+    hint: Leave empty to use the circuit artwork.
+  - label: Feature at the top of the homepage
+    name: featured
+    widget: boolean
+    default: false
+  - label: Draft (hide from the site)
+    name: draft
+    widget: boolean
+    default: false
+  - label: Author
+    name: author
+    widget: string
+    default: JD
+  - label: Article
+    name: body
+    widget: markdown
+- name: reviews
+  label: Reviews
+  label_singular: Review
+  folder: src/content/reviews
+  create: true
+  slug: '{{slug}}'
+  fields:
+  - label: Title
+    name: title
+    widget: string
+  - label: Short summary
+    name: description
+    widget: text
+    required: false
+    hint: One or two sentences shown on the homepage and in search results.
+  - label: Publish date
+    name: date
+    widget: datetime
+  - label: Section
+    name: category
+    widget: select
+    default: tech
+    options:
+    - label: Tech
+      value: tech
+    - label: Homelab
+      value: homelab
+    - label: Homestead
+      value: homestead
+    - label: FarmLabs
+      value: farmlabs
+  - label: Cover photo
+    name: image
+    widget: image
+    required: false
+    hint: Leave empty to use the circuit artwork.
+  - label: Feature at the top of the homepage
+    name: featured
+    widget: boolean
+    default: false
+  - label: Draft (hide from the site)
+    name: draft
+    widget: boolean
+    default: false
+  - label: Author
+    name: author
+    widget: string
+    default: JD
+  - label: What kind of review
+    name: kind
+    widget: select
+    default: Equipment
+    options:
+    - Tools
+    - Equipment
+    - Software
+    - Farm equipment
+    - Technique
+    - Build
+    - Homelab
+  - label: Score out of 10
+    name: score
+    widget: number
+    value_type: float
+    min: 0
+    max: 10
+    step: 0.1
+  - label: Show the FarmNerds Approved badge
+    name: approved
+    widget: boolean
+    default: false
+  - label: One-line verdict
+    name: verdict
+    widget: string
+    required: false
+  - label: How long it was tested
+    name: tested
+    widget: string
+    required: false
+    hint: 'Example: Tested for 90 days'
+  - label: Disclosure
+    name: disclosure
+    widget: string
+    required: false
+    hint: 'Example: Bought with our own money.'
+  - label: Quick facts (shown beside the score)
+    name: facts
+    widget: list
+    required: false
+    fields:
+    - label: Label
+      name: label
+      widget: string
+    - label: Value
+      name: value
+      widget: string
+  - label: Pros
+    name: pros
+    widget: list
+    required: false
+    field:
+      label: Pro
+      name: pro
+      widget: string
+  - label: Cons
+    name: cons
+    widget: list
+    required: false
+    field:
+      label: Con
+      name: con
+      widget: string
+  - label: Specs table
+    name: specs
+    widget: list
+    required: false
+    fields:
+    - label: Label
+      name: label
+      widget: string
+    - label: Value
+      name: value
+      widget: string
+  - label: Benchmark charts
+    name: charts
+    widget: list
+    required: false
+    fields:
+    - label: Chart title
+      name: title
+      widget: string
+    - label: Note
+      name: note
+      widget: string
+      required: false
+      hint: 'Example: Higher is better'
+    - label: Bars
+      name: rows
+      widget: list
+      fields:
+      - label: Name
+        name: label
+        widget: string
+      - label: Number
+        name: value
+        widget: number
+        value_type: float
+      - label: Highlight (the thing being reviewed)
+        name: highlight
+        widget: boolean
+        default: false
+  - label: Score breakdown
+    name: breakdown
+    widget: list
+    required: false
+    fields:
+    - label: Label
+      name: label
+      widget: string
+    - label: Score out of 10
+      name: score
+      widget: number
+      value_type: float
+      min: 0
+      max: 10
+      step: 0.1
+  - label: Write-up (each Heading 2 starts a new page)
+    name: body
+    widget: markdown
+- name: settings
+  label: Site settings
+  files:
+  - name: farmlab
+    label: FarmLab stats box
+    file: src/data/farmlab.json
+    fields:
+    - label: Show on homepage
+      name: show
+      widget: boolean
+    - label: Nodes
+      name: nodes
+      widget: string
+    - label: Guests
+      name: guests
+      widget: string
+    - label: Power draw
+      name: power
+      widget: string
+    - label: Uptime
+      name: uptime
+      widget: string
+    - label: Storage used (TB)
+      name: storageUsed
+      widget: number
+      value_type: float
+    - label: Storage total (TB)
+      name: storageTotal
+      widget: number
+      value_type: float

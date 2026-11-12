@@ -1,0 +1,24 @@
+---
+import Base from '../../layouts/Base.astro';
+import Thumb from '../../components/Thumb.astro';
+import { allPosts, CATS, fmtShort } from '../../lib/posts';
+const reviews = (await allPosts()).filter((p) => p.type === 'review');
+---
+<Base title="Reviews" description="Tools, equipment, software and farm gear, tested and scored." section="reviews">
+  <div class="stack c-fl">
+    <div class="pagehead"><span class="chip">Section</span><h1>Reviews</h1><p>Tools, equipment, software, farm gear, techniques and builds. Tested here, scored out of 10, with the pros and cons spelled out.</p></div>
+    <div>
+      {reviews.map((p: any) => (
+        <a class:list={['item', CATS[p.data.category as keyof typeof CATS].cls]} href={p.url}>
+          <time datetime={p.data.date.toISOString()}>{fmtShort(p.data.date)}</time>
+          <div class="ph"><Thumb post={p} /></div>
+          <div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:start">
+            <div><span class="chip">{p.data.kind}</span><h3>{p.data.title}</h3><p>{p.data.verdict || p.data.description}</p></div>
+            <span class="sc">{p.data.score.toFixed(1)}</span>
+          </div>
+        </a>
+      ))}
+      {reviews.length === 0 && <p class="empty">The first review is on the bench.</p>}
+    </div>
+  </div>
+</Base>

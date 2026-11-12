@@ -1,0 +1,16 @@
+---
+import Thumb from './Thumb.astro';
+import { CATS, fmtTime, fmtShort } from '../lib/posts';
+interface Props { post: any; when?: 'time' | 'date' }
+const { post, when = 'date' } = Astro.props;
+const cat = CATS[post.data.category as keyof typeof CATS];
+---
+<a class:list={['item', cat.cls]} href={post.url}>
+  <time datetime={post.data.date.toISOString()}>{when === 'time' ? fmtTime(post.data.date) : fmtShort(post.data.date)}</time>
+  <div class="ph"><Thumb post={post} /></div>
+  <div>
+    <span class="chip">{post.type === 'review' ? `Review · ${cat.label}` : cat.label}</span>
+    <h3>{post.data.title}</h3>
+    <p>{post.data.description}</p>
+  </div>
+</a>

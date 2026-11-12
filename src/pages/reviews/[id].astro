@@ -1,0 +1,126 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection, render } from 'astro:content';
+import { CATS, fmtDate, readTime, seed } from '../../lib/posts';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('reviews', (e) => import.meta.env.DEV || !e.data.draft);
+  return posts.map((post) => ({ params: { id: post.id }, props: { post } }));
+}
+const { post } = Astro.props;
+const d = post.data;
+const { Content } = await render(post);
+const cat = CATS[d.category];
+const C = 2 * Math.PI * 42;
+const dash = `${((d.score / 10) * C).toFixed(1)} ${C.toFixed(1)}`;
+const num = (v: number) => v.toLocaleString('en-US');
+const hasVerdict = d.pros?.length || d.cons?.length || d.breakdown?.length;
+const ld = {
+  '@context': 'https://schema.org', '@type': 'Review', name: d.title, datePublished: d.date.toISOString(),
+  author: { '@type': 'Person', name: d.author }, itemReviewed: { '@type': 'Thing', name: d.title },
+  reviewRating: { '@type': 'Rating', ratingValue: d.score, bestRating: 10, worstRating: 0 },
+};
+---
+<Base title={`${d.title} review`} description={d.description || d.verdict} section="reviews" image={d.image}>
+  <article class="stack" style="gap:22px">
+    <div class="crumbs"><a href="/">Home</a> / <a href="/reviews/">Reviews</a> / <a href={`/${d.category}/`}>{cat.label}</a></div>
+    <div class:list={['rhead', cat.cls]}>
+      <div class="rhero">
+        {d.image ? <img src={d.image} alt="" /> : <canvas class="art" data-seed={seed(post.id)} data-n="26"></canvas>}
+        <div class="txt"><span class="chip">Review · {d.kind}</span>
+          <h1>{d.title}</h1>
+          <div class="by"><span>By {d.author}</span><span>{fmtDate(d.date)}</span>{d.tested && <span>{d.tested}</span>}<span>{readTime(post.body)} min read</span></div></div>
+      </div>
+      <div class="card sum">
+        <div class="sum-top">
+          <div class="ring" role="img" aria-label={`Score ${d.score.toFixed(1)} out of 10`}>
+            <svg width="96" height="96" viewBox="0 0 96 96" aria-hidden="true"><circle cx="48" cy="48" r="42" fill="none" stroke="var(--surface2)" stroke-width="7"/><circle cx="48" cy="48" r="42" fill="none" stroke="var(--ember)" stroke-width="7" stroke-linecap="round" stroke-dasharray={dash}/></svg>
+            <b>{d.score.toFixed(1)}</b></div>
+          <div>{d.approved && <span class="award"><span class="logo-mark"></span>FarmNerds Approved</span>}{d.verdict && <h2>{d.verdict}</h2>}</div>
+        </div>
+        {d.facts?.length && <dl class="kv">{d.facts.map((f) => <><dt>{f.label}</dt><dd>{f.value}</dd></>)}</dl>}
+        {d.disclosure && <p style="font-size:14px;color:var(--muted)">{d.disclosure}</p>}
+      </div>
+    </div>
+    {d.sample && <p class="sample">Sample review with made-up numbers. It only shows the layout. Delete it in the editor before launch.</p>}
+
+    <nav class="steps" aria-label="Review pages"></nav>
+
+    <div id="review-body" class="stack" style="gap:22px">
+      <section class="rp" data-title="Introduction" data-md><div class="md"><Content /></div></section>
+
+      {d.specs?.length && (
+        <section class="rp" data-title="Specs"><h2>Specs</h2>
+          <div class="tbl"><table class="specs">{d.specs.map((s) => <tr><th>{s.label}</th><td>{s.value}</td></tr>)}</table></div>
+        </section>
+      )}
+
+      {d.charts?.length && (
+        <section class="rp" data-title="Benchmarks"><h2>Benchmarks</h2>
+          {d.charts.map((c) => { const max = Math.max(...c.rows.map((r) => r.value), 0) || 1; return (
+            <div class="chart"><h3>{c.title}</h3><p class="sub">{c.note}</p>
+              {c.rows.map((r) => <div class:list={['row', { me: r.highlight }]}><span>{r.label}</span><i style={`--v:${(r.value / max) * 100}%`}></i><b>{num(r.value)}</b></div>)}
+            </div>); })}
+        </section>
+      )}
+
+      {hasVerdict && (
+        <section class="rp" data-title="Verdict"><h2>Verdict</h2>
+          <div class="pc">
+            {d.pros?.length && <div class="card p"><h3>Pros</h3><ul>{d.pros.map((p) => <li>{p}</li>)}</ul></div>}
+            {d.cons?.length && <div class="card n"><h3>Cons</h3><ul>{d.cons.map((p) => <li>{p}</li>)}</ul></div>}
+          </div>
+          {d.breakdown?.length && (
+            <div class="chart"><h3>Score breakdown</h3><p class="sub">Out of 10</p>
+              {d.breakdown.map((b) => <div class="row me"><span>{b.label}</span><i style={`--v:${b.score * 10}%`}></i><b>{b.score.toFixed(1)}</b></div>)}
+            </div>
+          )}
+        </section>
+      )}
+    </div>
+
+    <div class="pn" hidden><button id="prev" type="button">← Previous page</button><button id="next" type="button">Next page →</button></div>
+  </article>
+  <script type="application/ld+json" set:html={JSON.stringify(ld)} />
+  <script>
+    /* Turn the review into pages: each "## Heading" in the write-up becomes a page, followed by Specs, Benchmarks and Verdict.
+       Without JavaScript everything simply shows as one long page. */
+    const body = document.getElementById('review-body')!;
+    const mdSec = body.querySelector<HTMLElement>('[data-md]')!;
+    const md = mdSec.querySelector('.md')!;
+    const made: HTMLElement[] = [];
+    let cur: Element | null = null;
+    for (const el of [...md.children]) {
+      if (el.tagName === 'H2' || !cur) {
+        const s = document.createElement('section'); s.className = 'rp';
+        s.dataset.title = el.tagName === 'H2' ? el.textContent || '' : 'Introduction';
+        const h = document.createElement('h2'); h.textContent = s.dataset.title; s.append(h);
+        cur = document.createElement('div'); cur.className = 'md'; s.append(cur); made.push(s);
+        if (el.tagName === 'H2') { el.remove(); continue; }
+      }
+      cur.append(el);
+    }
+    mdSec.replaceWith(...made);
+
+    const pages = [...body.querySelectorAll<HTMLElement>('.rp')];
+    const steps = document.querySelector('.steps')!, pn = document.querySelector<HTMLElement>('.pn')!;
+    const prev = document.getElementById('prev') as HTMLButtonElement, next = document.getElementById('next') as HTMLButtonElement;
+    if (pages.length > 1) {
+      let at = 0;
+      const tabs = pages.map((p, k) => {
+        const b = document.createElement('button'); b.type = 'button';
+        const n = document.createElement('span'); n.textContent = String(k + 1).padStart(2, '0');
+        b.append(n, p.dataset.title || ''); b.addEventListener('click', () => go(k)); steps.append(b); return b;
+      });
+      function go(i: number, scroll = false) {
+        at = Math.max(0, Math.min(pages.length - 1, i));
+        tabs.forEach((t, k) => t.setAttribute('aria-current', String(k === at)));
+        pages.forEach((p, k) => (p.hidden = k !== at));
+        prev.disabled = at === 0; next.disabled = at === pages.length - 1;
+        if (scroll) steps.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
+      }
+      prev.addEventListener('click', () => go(at - 1, true)); next.addEventListener('click', () => go(at + 1, true));
+      pn.hidden = false; go(0);
+    }
+  </script>
+</Base>

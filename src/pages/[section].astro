@@ -1,0 +1,27 @@
+---
+import Base from '../layouts/Base.astro';
+import FeedItem from '../components/FeedItem.astro';
+import { allPosts, CATS } from '../lib/posts';
+
+export function getStaticPaths() {
+  return Object.keys(CATS).map((section) => ({ params: { section } }));
+}
+const blurbs: Record<string, string> = {
+  tech: 'Hardware, software, Linux and whatever is on the bench this week.',
+  homelab: 'Proxmox, self-hosting, networking and the FarmLab rack.',
+  homestead: 'Farm equipment, building things and techniques that earn their keep.',
+  farmlabs: 'Where the tech meets the dirt: build logs and experiments from the farm.',
+};
+const section = Astro.params.section as keyof typeof CATS;
+const cat = CATS[section];
+const posts = (await allPosts()).filter((p) => p.data.category === section);
+---
+<Base title={cat.label} description={blurbs[section]} section={section}>
+  <div class:list={['stack', cat.cls]}>
+    <div class="pagehead"><span class="chip">Section</span><h1>{cat.label}</h1><p>{blurbs[section]}</p></div>
+    <div>
+      {posts.map((p) => <FeedItem post={p} />)}
+      {posts.length === 0 && <p class="empty">Nothing here yet. Check back soon.</p>}
+    </div>
+  </div>
+</Base>
