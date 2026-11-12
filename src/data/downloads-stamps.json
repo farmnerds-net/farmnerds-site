@@ -1,4 +1,6 @@
 {
   "proxmox-ve": "approved",
-  "plex": "approved"
+  "debian": "approved",
+  "plex": "approved",
+  "rufus": "approved"
 }
