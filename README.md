@@ -44,7 +44,7 @@ npm run build    # production build into dist/
 
 1. In the Cloudflare dashboard go to **Workers & Pages** and select **Create application**.
 2. Choose **GitHub** and pick this repo.
-3. Keep the project name `farmnerds-site` (it must match the name in `wrangler.jsonc`). Build command: `npm run build`. Deploy command: `npx wrangler deploy`.
+3. Name the project `farmnerds-net` (it must match the name in `wrangler.jsonc`). Build command: `npm run build`. Deploy command: `npx wrangler deploy`.
 4. Select **Save and Deploy**. The site appears at a `workers.dev` address.
 5. To use the real domain, open the project's **Settings**, then **Domains & Routes**, and add `farmnerds.net`.
 

@@ -1,6 +1,6 @@
 {
   // Cloudflare settings: serve the built site in ./dist as static files.
-  "name": "farmnerds-site",
+  "name": "farmnerds-net",
   "compatibility_date": "2026-11-11",
   "assets": {
     "directory": "./dist",
