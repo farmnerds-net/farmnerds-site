@@ -1,13 +1,20 @@
 ---
 import Base from '../layouts/Base.astro';
+import { getEntry, render } from 'astro:content';
+// The wording lives in src/content/pages/about.md and is edited from /admin (Pages).
+const page = await getEntry('pages', 'about');
+if (!page) throw new Error('src/content/pages/about.md is missing');
+const { Content } = await render(page);
+const { label, title, description, buttons } = page.data;
 ---
-<Base title="About" description="What FarmNerds is and who is behind it." section="about">
+<Base title={label || title} description={description} section="about">
   <div class="stack">
-    <div class="pagehead"><span class="chip">About</span><h1>Powered by brisket, bandwidth, and bad ideas.</h1></div>
-    <div class="md">
-      <p>FarmNerds is where tech meets the dirt. It is run by JD out of Stephenville, Texas, and covers three things: tech, homelabbing and homesteading. Where they overlap, that is FarmLabs.</p>
-      <p>Reviews here cover tools, equipment, software, farm equipment, techniques and builds. Each one gets a score out of 10 and a plain list of pros and cons.</p>
-      <p>The scripts and recipes behind the homelab posts live on <a href="https://github.com/farmnerds-net">GitHub</a>.</p>
-    </div>
+    <div class="pagehead"><span class="chip">{label}</span><h1>{title}</h1></div>
+    <div class="md"><Content /></div>
+    {buttons?.length ? (
+      <div class="btns">
+        {buttons.map((b, i) => <a class={i % 2 ? 'btn alt' : 'btn'} href={b.url} target="_blank" rel="noopener">{b.label}</a>)}
+      </div>
+    ) : null}
   </div>
 </Base>

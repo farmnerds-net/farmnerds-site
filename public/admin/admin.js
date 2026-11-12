@@ -384,16 +384,77 @@ h('div', { class: 'col side' },
     dirty = false;
   }
 
+  /* ---------- About and Support pages ---------- */
+  async function showPages() {
+    const { pages } = await api('page');
+    app.replaceChildren(h('div', { class: 'head' }, h('h1', {}, 'Pages')),
+      h('p', { class: 'muted', style: 'margin:-6px 0 16px' }, 'The standing pages in the top menu. Pick one to change its wording.'),
+      h('div', { class: 'rows' }, pages.map((p) => h('a', { class: 'rowp', href: '#/pages/' + p.id },
+        h('b', {}, p.name), h('span', { class: 'hide-s' }, `farmnerds.net/${p.id}/`), h('span', { class: 'hide-s' }), h('span', {}, 'Edit →')))));
+    dirty = false;
+  }
+  async function showPage(id) {
+    app.replaceChildren(h('p', { class: 'muted center' }, 'Loading…'));
+    const page = await api('page?id=' + encodeURIComponent(id));
+    const d = page.data;
+    let sha = page.sha;
+    const mark = () => (dirty = true);
+    const F = (label, input, hint) => h('label', { class: 'f' }, label, input, hint && h('small', {}, hint));
+    const title = h('input', { type: 'text', class: 'title-in', value: d.title || '', placeholder: 'Page heading', 'aria-label': 'Page heading' });
+    const label = h('input', { type: 'text', value: d.label || page.name, maxLength: 30 });
+    const desc = h('textarea', { rows: 2, value: d.description || '' });
+    const buttons = repeater([{ key: 'label', label: 'Button label' }, { key: 'url', label: 'Link (https://…)' }], d.buttons || [], 'Add button');
+    const bodyEl = h('div');
+    let editor;
+    const btn = h('button', { type: 'button', class: 'btn primary', onclick: async () => {
+      btn.disabled = true;
+      try {
+        const r = await api('page', { method: 'PUT', body: { id, sha, body: toSiteUrls(editor.getMarkdown()),
+          data: { label: label.value, title: title.value, description: desc.value, buttons: buttons.get() } } });
+        sha = r.sha; dirty = false;
+        toast('Saved. The site updates in about a minute.');
+      } catch (ex) { toast(ex.message, true); }
+      btn.disabled = false;
+    } }, 'Save and publish');
+    app.replaceChildren(h('form', { class: 'edit', oninput: mark, onsubmit: (e) => e.preventDefault() },
+      h('div', { class: 'col' },
+        h('div', { class: 'head', style: 'margin:0' }, h('h1', {}, page.name + ' page'), h('a', { class: 'btn small', href: '#/pages' }, '← All pages')),
+        page.handEdited && h('p', { class: 'warn' }, 'This page was changed by hand outside the editor. Saving here may tidy up its settings.'),
+        title,
+        h('div', { class: 'card' }, h('h2', {}, 'The wording'), bodyEl),
+        h('div', { class: 'card' }, h('h2', {}, 'Buttons'),
+          h('p', { class: 'hint' }, 'Big buttons shown under the wording, like the donate links. Leave empty for none.'), buttons.el)),
+      h('div', { class: 'col side' },
+        h('div', { class: 'card' }, h('div', { class: 'actions' }, btn,
+          h('a', { class: 'btn', href: `/${id}/`, target: '_blank', rel: 'noopener' }, 'View on site ↗'))),
+        h('div', { class: 'card' }, h('h2', {}, 'Details'),
+          F('Small tag above the heading', label),
+          F('Search description', desc, 'One sentence shown by Google and when the page is shared.')))));
+    editor = new window.ToastEditor({
+      el: bodyEl, height: '460px', initialEditType: 'wysiwyg', previewStyle: 'tab', usageStatistics: false, autofocus: false,
+      theme: (document.documentElement.dataset.theme || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')),
+      initialValue: toEditorUrls(page.body), placeholder: 'Write the page…',
+      toolbarItems: [['heading', 'bold', 'italic', 'strike'], ['hr', 'quote'], ['ul', 'ol'], ['table', 'image', 'link']],
+      hooks: { addImageBlobHook: async (blob, done) => {
+        toast('Uploading photo…');
+        try { const url = await upload(blob); done(toEditorUrls(url), ''); toast('Photo added.'); } catch (ex) { toast(ex.message, true); }
+      } },
+      events: { change: mark },
+    });
+    dirty = false;
+  }
+
   /* ---------- routing ---------- */
   let lastHash = location.hash;
   async function route() {
     const parts = location.hash.replace(/^#\/?/, '').split('/').filter(Boolean);
-    document.querySelectorAll('[data-nav]').forEach((a) => a.classList.toggle('on', a.dataset.nav === (['settings', 'downloads'].includes(parts[0]) ? parts[0] : 'list')));
+    document.querySelectorAll('[data-nav]').forEach((a) => a.classList.toggle('on', a.dataset.nav === (['settings', 'downloads', 'pages'].includes(parts[0]) ? parts[0] : 'list')));
     try {
       if (parts[0] === 'new' && (parts[1] === 'article' || parts[1] === 'review')) await showEdit(parts[1]);
       else if (parts[0] === 'edit' && parts[2]) await showEdit(parts[1], decodeURIComponent(parts[2]));
       else if (parts[0] === 'settings') await showSettings();
       else if (parts[0] === 'downloads') await showDownloads();
+      else if (parts[0] === 'pages') await (parts[1] ? showPage(decodeURIComponent(parts[1])) : showPages());
       else await showList();
       scrollTo(0, 0);
     } catch (ex) { if (!bar.hidden) app.replaceChildren(h('p', { class: 'warn', style: 'max-width:640px;margin:40px auto' }, ex.message)); }
