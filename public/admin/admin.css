@@ -7,9 +7,12 @@
   --mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
   color-scheme:dark;
 }
-@media (prefers-color-scheme:light){:root{
-  --bg:#eef2f2; --surface:#ffffff; --surface2:#f4f7f7; --line:#d3dcde; --fg:#122026; --muted:#566972;
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){
+  --bg:#f5efe0; --surface:#fdf9ee; --surface2:#f0e9d6; --line:#ddd3bb; --fg:#1b241c; --muted:#5d6557;
   --accent:#1f7a41; --accent-ink:#ffffff; --ember:#c25a12; --good:#22804a; --bad:#c2402e; color-scheme:light}}
+:root[data-theme="light"]{
+  --bg:#f5efe0; --surface:#fdf9ee; --surface2:#f0e9d6; --line:#ddd3bb; --fg:#1b241c; --muted:#5d6557;
+  --accent:#1f7a41; --accent-ink:#ffffff; --ember:#c25a12; --good:#22804a; --bad:#c2402e; color-scheme:light}
 
 *{box-sizing:border-box}
 [hidden]{display:none!important}
@@ -110,3 +113,9 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent);outline:0}
 .ourscore span{font-size:13px;color:var(--muted)}
 .toastui-editor-defaultUI-toolbar{overflow:hidden}
 .card{min-width:0}
+/* light mode: keep the write-up box creamy instead of stark white */
+.toastui-editor-defaultUI:not(.toastui-editor-dark) .toastui-editor-defaultUI-toolbar{background:var(--surface2);border-bottom-color:var(--line)}
+.toastui-editor-defaultUI:not(.toastui-editor-dark) .toastui-editor-toolbar-icons{background-color:transparent;border-color:transparent}
+.toastui-editor-defaultUI:not(.toastui-editor-dark) .toastui-editor-main,
+.toastui-editor-defaultUI:not(.toastui-editor-dark) .toastui-editor-ww-container,
+.toastui-editor-defaultUI:not(.toastui-editor-dark) .ProseMirror{background:var(--bg)}

@@ -280,7 +280,7 @@ h('div', { class: 'col side' },
     app.replaceChildren(form);
     editor = new window.ToastEditor({
       el: bodyEl, height: '520px', initialEditType: 'wysiwyg', previewStyle: 'tab', usageStatistics: false, autofocus: false,
-      theme: matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light',
+      theme: (document.documentElement.dataset.theme || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')),
       initialValue: toEditorUrls(post.body),
       placeholder: isReview ? 'Write the review. Use Heading 2 to start a new page.' : 'Write your article…',
       toolbarItems: [['heading', 'bold', 'italic', 'strike'], ['hr', 'quote'], ['ul', 'ol'], ['table', 'image', 'link'], ['code', 'codeblock']],

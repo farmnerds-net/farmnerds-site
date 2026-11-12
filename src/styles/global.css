@@ -10,10 +10,14 @@
   --logo:url("/logo-mask.png");
   color-scheme:dark;
 }
-@media (prefers-color-scheme:light){:root{
-  --bg:#eef2f2; --surface:#ffffff; --surface2:#f4f7f7; --line:#d3dcde; --fg:#122026; --muted:#566972;
-  --accent:#1f7a41; --accent-ink:#ffffff; --ember:#c25a12; --tech:#2a6fb0; --ring:#122026; --lab:#1f7a41; --stead:#5f7417;
-  --good:#22804a; --bad:#c2402e; --art-bg:#e3eaea; --shadow:0 10px 28px rgba(18,32,38,.10); color-scheme:light}}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){
+  --bg:#f5efe0; --surface:#fdf9ee; --surface2:#f0e9d6; --line:#ddd3bb; --fg:#1b241c; --muted:#5d6557;
+  --accent:#1f7a41; --accent-ink:#ffffff; --ember:#c25a12; --tech:#2a6fb0; --ring:#1b241c; --lab:#1f7a41; --stead:#5f7417;
+  --good:#22804a; --bad:#c2402e; --art-bg:#e9e1cb; --shadow:0 10px 28px rgba(40,34,18,.10); color-scheme:light}}
+:root[data-theme="light"]{
+  --bg:#f5efe0; --surface:#fdf9ee; --surface2:#f0e9d6; --line:#ddd3bb; --fg:#1b241c; --muted:#5d6557;
+  --accent:#1f7a41; --accent-ink:#ffffff; --ember:#c25a12; --tech:#2a6fb0; --ring:#1b241c; --lab:#1f7a41; --stead:#5f7417;
+  --good:#22804a; --bad:#c2402e; --art-bg:#e9e1cb; --shadow:0 10px 28px rgba(40,34,18,.10); color-scheme:light}
 
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
@@ -224,3 +228,9 @@ main{flex:1;width:100%}
 .sc.part{display:inline-block;margin-left:12px;font-size:14px;padding:5px 8px;min-width:0;vertical-align:middle}
 .steps button em{font:700 12px var(--mono);font-style:normal;color:var(--ember)}
 .steps button[aria-current="true"] em{color:inherit}
+.themebtn{margin-left:auto;display:inline-flex;align-items:center;gap:8px;font:600 13px var(--display);letter-spacing:.05em;text-transform:uppercase;color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:8px 14px;cursor:pointer}
+.themebtn:hover{color:var(--fg);border-color:var(--accent)}
+.themebtn svg{width:16px;height:16px}
+.themebtn .sun,.themebtn .to-light{display:none}
+:root.is-dark .themebtn .sun,:root.is-dark .themebtn .to-light{display:inline}
+:root.is-dark .themebtn .moon,:root.is-dark .themebtn .to-dark{display:none}

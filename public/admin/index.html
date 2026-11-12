@@ -10,6 +10,10 @@
   <link rel="stylesheet" href="/admin/vendor/toastui-editor.css" />
   <link rel="stylesheet" href="/admin/vendor/toastui-editor-dark.css" />
   <link rel="stylesheet" href="/admin/admin.css" />
+  <script>
+    // Follow the light/dark choice made on the public site.
+    try { var t = localStorage.getItem('theme'); if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t; } catch (e) {}
+  </script>
 </head>
 <body>
   <header class="bar" id="bar" hidden>
