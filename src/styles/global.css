@@ -2,7 +2,7 @@
    category bands after. Circuit-root traces (the logo's roots) are the one recurring motif: hero art, thumbnails, dividers. */
 :root{
   --bg:#0f1519; --surface:#161f25; --surface2:#1d2930; --line:#293841; --fg:#e7eef0; --muted:#8ea2ab;
-  --accent:#5fc27b; --accent-ink:#0b1a10; --ember:#f0883e; --tech:#6fb0e6; --ring:#ffffff; --lab:#5fc27b; --stead:#b5c765;
+  --accent:#5fc27b; --accent-ink:#0b1a10; --ember:#f0883e; --tech:#6fb0e6; --electric:#2f9bff; --ring:#ffffff; --lab:#5fc27b; --stead:#b5c765;
   --good:#6fcf8e; --bad:#ef7d6c; --art-bg:#131c21; --shadow:0 12px 32px rgba(0,0,0,.35);
   --display:"Chakra Petch","Segoe UI",system-ui,sans-serif;
   --body:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
@@ -12,11 +12,11 @@
 }
 @media (prefers-color-scheme:light){:root:not([data-theme="dark"]){
   --bg:#f5efe0; --surface:#fdf9ee; --surface2:#f0e9d6; --line:#ddd3bb; --fg:#1b241c; --muted:#5d6557;
-  --accent:#1f7a41; --accent-ink:#ffffff; --ember:#c25a12; --tech:#2a6fb0; --ring:#1b241c; --lab:#1f7a41; --stead:#5f7417;
+  --accent:#1f7a41; --accent-ink:#ffffff; --ember:#c25a12; --tech:#2a6fb0; --electric:#0a5fe0; --ring:#1b241c; --lab:#1f7a41; --stead:#5f7417;
   --good:#22804a; --bad:#c2402e; --art-bg:#e9e1cb; --shadow:0 10px 28px rgba(40,34,18,.10); color-scheme:light}}
 :root[data-theme="light"]{
   --bg:#f5efe0; --surface:#fdf9ee; --surface2:#f0e9d6; --line:#ddd3bb; --fg:#1b241c; --muted:#5d6557;
-  --accent:#1f7a41; --accent-ink:#ffffff; --ember:#c25a12; --tech:#2a6fb0; --ring:#1b241c; --lab:#1f7a41; --stead:#5f7417;
+  --accent:#1f7a41; --accent-ink:#ffffff; --ember:#c25a12; --tech:#2a6fb0; --electric:#0a5fe0; --ring:#1b241c; --lab:#1f7a41; --stead:#5f7417;
   --good:#22804a; --bad:#c2402e; --art-bg:#e9e1cb; --shadow:0 10px 28px rgba(40,34,18,.10); color-scheme:light}
 
 *{box-sizing:border-box}
@@ -228,9 +228,17 @@ main{flex:1;width:100%}
 .sc.part{display:inline-block;margin-left:12px;font-size:14px;padding:5px 8px;min-width:0;vertical-align:middle}
 .steps button em{font:700 12px var(--mono);font-style:normal;color:var(--ember)}
 .steps button[aria-current="true"] em{color:inherit}
-.themebtn{margin-left:auto;display:inline-flex;align-items:center;gap:8px;font:600 13px var(--display);letter-spacing:.05em;text-transform:uppercase;color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:8px 14px;cursor:pointer}
-.themebtn:hover{color:var(--fg);border-color:var(--accent)}
-.themebtn svg{width:16px;height:16px}
-.themebtn .sun,.themebtn .to-light{display:none}
-:root.is-dark .themebtn .sun,:root.is-dark .themebtn .to-light{display:inline}
-:root.is-dark .themebtn .moon,:root.is-dark .themebtn .to-dark{display:none}
+.themebtn{margin-left:auto;background:none;border:0;padding:6px;cursor:pointer;border-radius:999px;line-height:0}
+.themebtn .track{display:block;position:relative;width:62px;height:32px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);transition:border-color .2s}
+.themebtn:hover .track{border-color:var(--accent)}
+.themebtn .knob{position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:var(--accent);color:var(--accent-ink);box-shadow:0 2px 6px rgba(0,0,0,.25);transition:transform .5s cubic-bezier(.5,1.5,.5,1)}
+:root.is-dark .themebtn .knob{transform:translateX(30px)}
+.themebtn svg{position:absolute;inset:4px;width:16px;height:16px;transition:transform .5s cubic-bezier(.5,1.5,.5,1),opacity .25s}
+.themebtn .moon{transform:rotate(-120deg) scale(0);opacity:0}
+:root.is-dark .themebtn .moon{transform:none;opacity:1}
+:root.is-dark .themebtn .sun{transform:rotate(120deg) scale(0);opacity:0}
+::view-transition-old(root),::view-transition-new(root){animation:none;mix-blend-mode:normal}
+@media (prefers-reduced-motion:reduce){.themebtn .knob,.themebtn svg{transition:none}}
+footer .vet{flex-basis:100%;margin:0;padding-top:16px;border-top:1px solid var(--line);text-align:center;font:600 13px var(--display);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+footer .vet b{color:var(--electric);font-weight:700}
+:root.is-dark footer .vet b{text-shadow:0 0 12px color-mix(in srgb,var(--electric) 55%,transparent)}
