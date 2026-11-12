@@ -45,8 +45,8 @@
       "date": "2026-11-04T00:00:00.000Z",
       "url": "",
       "found": "2026-11-12T03:30:00.000Z",
-      "file": "",
-      "fileLabel": ""
+      "file": "https://downloadmirror.intel.com/932449/gfx_win_101.9175.exe",
+      "fileLabel": "Windows installer"
     },
     {
       "id": "nvidia-linux",
@@ -59,8 +59,8 @@
       "date": "",
       "url": "",
       "found": "2026-11-12T03:19:20.971Z",
-      "file": "",
-      "fileLabel": ""
+      "file": "https://download.nvidia.com/XFree86/Linux-x86_64/595.104.02/NVIDIA-Linux-x86_64-595.104.02.run",
+      "fileLabel": ".run installer"
     },
     {
       "id": "proxmox-ve",
@@ -73,8 +73,8 @@
       "date": "",
       "url": "",
       "found": "2026-11-12T03:20:51.889Z",
-      "file": "",
-      "fileLabel": ""
+      "file": "https://enterprise.proxmox.com/iso/proxmox-ve_9.2-1.iso",
+      "fileLabel": "ISO"
     },
     {
       "id": "proxmox-backup",
@@ -87,8 +87,8 @@
       "date": "",
       "url": "",
       "found": "2026-11-12T03:20:51.889Z",
-      "file": "",
-      "fileLabel": ""
+      "file": "https://enterprise.proxmox.com/iso/proxmox-backup-server_4.2-1.iso",
+      "fileLabel": "ISO"
     },
     {
       "id": "truenas",
@@ -101,8 +101,8 @@
       "date": "",
       "url": "",
       "found": "2026-11-12T03:30:00.000Z",
-      "file": "",
-      "fileLabel": ""
+      "file": "https://download.sys.truenas.net/TrueNAS-SCALE-Goldeye/25.10.8/TrueNAS-SCALE-25.10.8.iso",
+      "fileLabel": "ISO"
     },
     {
       "id": "home-assistant-os",
@@ -143,8 +143,8 @@
       "date": "2026-09-12T00:00:00.000Z",
       "url": "",
       "found": "2026-11-12T03:19:20.971Z",
-      "file": "",
-      "fileLabel": ""
+      "file": "https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/debian-13.7.0-amd64-netinst.iso",
+      "fileLabel": "netinst ISO"
     },
     {
       "id": "docker-engine",
@@ -171,8 +171,8 @@
       "date": "2026-10-23T11:44:26.000Z",
       "url": "",
       "found": "2026-11-12T03:19:20.971Z",
-      "file": "",
-      "fileLabel": ""
+      "file": "https://downloads.plex.tv/plex-media-server-new/1.43.5.11079-b3b13e506/windows/PlexMediaServer-1.43.5.11079-b3b13e506-x86_64.exe",
+      "fileLabel": "Windows installer"
     },
     {
       "id": "jellyfin",
@@ -199,8 +199,8 @@
       "date": "",
       "url": "https://tailscale.com/changelog",
       "found": "2026-11-12T03:19:20.971Z",
-      "file": "",
-      "fileLabel": ""
+      "file": "https://pkgs.tailscale.com/stable/tailscale-setup-1.104.6.exe",
+      "fileLabel": "Windows installer"
     },
     {
       "id": "rufus",
@@ -213,8 +213,8 @@
       "date": "2026-06-30T11:28:34Z",
       "url": "https://github.com/pbatard/rufus/releases/tag/v4.15",
       "found": "2026-11-12T03:19:20.971Z",
-      "file": "",
-      "fileLabel": ""
+      "file": "https://github.com/pbatard/rufus/releases/download/v4.15/rufus-4.15.exe",
+      "fileLabel": "Windows app"
     },
     {
       "id": "ventoy",
@@ -227,8 +227,8 @@
       "date": "2026-10-09T05:20:45Z",
       "url": "https://github.com/ventoy/Ventoy/releases/tag/v1.1.18",
       "found": "2026-11-12T03:19:20.971Z",
-      "file": "",
-      "fileLabel": ""
+      "file": "https://github.com/ventoy/Ventoy/releases/download/v1.1.18/ventoy-1.1.18-windows.zip",
+      "fileLabel": "Windows zip"
     },
     {
       "id": "rpi-imager",
@@ -241,8 +241,8 @@
       "date": "2026-10-08T16:36:14Z",
       "url": "https://github.com/raspberrypi/rpi-imager/releases/tag/v2.0.12",
       "found": "2026-11-12T03:19:20.971Z",
-      "file": "",
-      "fileLabel": ""
+      "file": "https://github.com/raspberrypi/rpi-imager/releases/download/v2.0.12/imager-v2.0.12.exe",
+      "fileLabel": "Windows installer"
     },
     {
       "id": "balena-etcher",
@@ -255,8 +255,8 @@
       "date": "2026-10-22T19:24:32Z",
       "url": "https://github.com/balena-io/etcher/releases/tag/v2.1.9",
       "found": "2026-11-12T03:19:20.971Z",
-      "file": "",
-      "fileLabel": ""
+      "file": "https://github.com/balena-io/etcher/releases/download/v2.1.9/balenaEtcher-2.1.9.Setup.exe",
+      "fileLabel": "Windows installer"
     },
     {
       "id": "memtest86plus",
@@ -283,8 +283,8 @@
       "date": "2026-11-07T11:45:33Z",
       "url": "https://github.com/ip7z/7zip/releases/tag/26.06",
       "found": "2026-11-12T03:19:20.971Z",
-      "file": "",
-      "fileLabel": ""
+      "file": "https://github.com/ip7z/7zip/releases/download/26.06/7z2606-x64.exe",
+      "fileLabel": "Windows 64-bit installer"
     }
   ]
 }
