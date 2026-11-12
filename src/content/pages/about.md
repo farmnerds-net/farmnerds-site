@@ -12,6 +12,8 @@ I am a christian dad, a husband to the best wife on the planet. She is from Loui
 I have a great stepson and I have my first daughter that passed away in 2017. She would have been 20 that year. If you knew her you knew her, I'm not going to post in other details than that online.
 My father in law is above all others, he is one of my favorite men still in my life.
 My dad and I have a slightly strained relationship, we talk, we visit, but things are just the way they are right now.
+AND then, last but for sure not least. My grand babies. Hence my PapiBear name, that just came out of nowhere. But this has become one of the joys of my life. A couple are not mine/mine, but they still treat me as one and calls me the name. It just lights up my heart when I am walking around the property and I hear "PAPI BEAR, PAPI BEAR, COME LOOK AT THIS? WHAT ARE YOU DOING? CAN I WALK WITH YOU? it's
+difficult to put that in to words the happiness that comes over me, so, that is my little 'ABOUT ME' section.
 
 The scripts and recipes behind the homelab posts live on GitHub, I will get some links to those posted pretty soon.
 Thank Y'all for reading this far. It means a lot.
