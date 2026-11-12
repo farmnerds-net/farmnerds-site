@@ -12,7 +12,8 @@
 
 export const GROUPS = ['GPU drivers', 'Homelab & servers', 'Media & network', 'Bench tools'];
 
-const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36';
+// We say who we are. If a vendor turns automated checks away, that item just keeps its last version until it's fixed by hand in /admin.
+const UA = 'FarmNerdsDownloadChecker/1.0 (+https://farmnerds.net/downloads/)';
 
 async function get(url, { json = false, headers = {} } = {}) {
   const res = await fetch(url, {
@@ -59,10 +60,13 @@ function githubTag(repo) {
   };
 }
 
-/** Newest file in a plain "index of" folder listing that matches `re` (first group = version). */
-function listing(url, re) {
+/** Newest file in a plain "index of" folder listing (or a list of mirrors) that matches `re` (first group = version). */
+function listing(urls, re) {
   return async () => {
-    const html = await get(url);
+    let html, lastErr;
+    // Try each mirror in turn until one answers.
+    for (const url of [].concat(urls)) { try { html = await get(url); break; } catch (e) { lastErr = e; } }
+    if (html == null) throw lastErr;
     const found = [];
     for (const m of html.matchAll(new RegExp(re.source, 'g'))) {
       // The file's date is usually on the same line, like 19-Nov-2025 or 2025-11-19.
@@ -91,7 +95,7 @@ async function nvidiaLinux() {
   return { version };
 }
 
-// AMD's site is strict with automated visitors. If this keeps failing, fix the version by hand in /admin.
+// AMD and Intel may turn automated checks away. If one keeps failing, fix the version by hand in /admin.
 async function amdAdrenalin() {
   const html = await get('https://www.amd.com/en/support/download/drivers.html');
   const v = newest([...html.matchAll(/adrenalin-edition-(\d+\.\d+\.\d+)/gi)].map((m) => m[1]));
@@ -127,6 +131,8 @@ async function tailscale() {
   return { version: j.TarballsVersion, url: 'https://tailscale.com/changelog' };
 }
 
+const PROXMOX_ISO = ['https://enterprise.proxmox.com/iso/', 'http://download.proxmox.com/iso/', 'https://download.proxmox.com/iso/'];
+
 export const SOURCES = [
   // GPU drivers
   { id: 'nvidia-geforce', name: 'NVIDIA GeForce Game Ready', vendor: 'NVIDIA', group: 'GPU drivers', note: 'Windows 10/11',
@@ -141,10 +147,10 @@ export const SOURCES = [
   // Homelab & servers
   { id: 'proxmox-ve', name: 'Proxmox VE', vendor: 'Proxmox', group: 'Homelab & servers', note: 'ISO installer',
     page: 'https://www.proxmox.com/en/downloads/proxmox-virtual-environment/iso',
-    check: listing('https://download.proxmox.com/iso/', /proxmox-ve_(\d+\.\d+-\d+)\.iso/) },
+    check: listing(PROXMOX_ISO, /proxmox-ve_(\d+\.\d+-\d+)\.iso/) },
   { id: 'proxmox-backup', name: 'Proxmox Backup Server', vendor: 'Proxmox', group: 'Homelab & servers', note: 'ISO installer',
     page: 'https://www.proxmox.com/en/downloads/proxmox-backup-server/iso',
-    check: listing('https://download.proxmox.com/iso/', /proxmox-backup-server_(\d+\.\d+-\d+)\.iso/) },
+    check: listing(PROXMOX_ISO, /proxmox-backup-server_(\d+\.\d+-\d+)\.iso/) },
   { id: 'truenas', name: 'TrueNAS Community Edition', vendor: 'iXsystems', group: 'Homelab & servers', note: 'ISO installer',
     page: 'https://www.truenas.com/download-tn-scale/', check: trueNas },
   { id: 'home-assistant-os', name: 'Home Assistant OS', vendor: 'Home Assistant', group: 'Homelab & servers', note: 'Images for Pi, x86, VMs',

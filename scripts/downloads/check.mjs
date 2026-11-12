@@ -31,7 +31,8 @@ const items = SOURCES.map((s, i) => {
   // Only move forward. A stale or half-loaded vendor page never rolls a version back.
   if (version && (!item.version || compareVersions(version, item.version) > 0)) {
     changes.push(`${s.name} ${version}`);
-    Object.assign(item, { version, date: date || now, url: url || '', found: now });
+    // No release date from the vendor: use the time we spotted it, unless this is the very first check.
+    Object.assign(item, { version, date: date || (item.version ? now : ''), url: url || '', found: now });
   }
   return item;
 });

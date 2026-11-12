@@ -49,10 +49,10 @@
       "group": "GPU drivers",
       "note": "Linux x86-64",
       "page": "https://www.nvidia.com/en-us/drivers/unix/",
-      "version": "",
+      "version": "595.104.02",
       "date": "",
       "url": "",
-      "found": ""
+      "found": "2026-11-12T03:19:20.971Z"
     },
     {
       "id": "proxmox-ve",
@@ -97,10 +97,10 @@
       "group": "Homelab & servers",
       "note": "Images for Pi, x86, VMs",
       "page": "https://www.home-assistant.io/installation/",
-      "version": "",
-      "date": "",
-      "url": "",
-      "found": ""
+      "version": "18.5",
+      "date": "2026-11-06T13:45:43Z",
+      "url": "https://github.com/home-assistant/operating-system/releases/tag/18.5",
+      "found": "2026-11-12T03:19:20.971Z"
     },
     {
       "id": "opnsense",
@@ -109,10 +109,10 @@
       "group": "Homelab & servers",
       "note": "Firewall and router",
       "page": "https://opnsense.org/download/",
-      "version": "",
+      "version": "26.7.9",
       "date": "",
       "url": "",
-      "found": ""
+      "found": "2026-11-12T03:19:20.971Z"
     },
     {
       "id": "debian",
@@ -121,10 +121,10 @@
       "group": "Homelab & servers",
       "note": "amd64 netinst",
       "page": "https://www.debian.org/distrib/",
-      "version": "",
-      "date": "",
+      "version": "13.7.0",
+      "date": "2026-09-12T00:00:00.000Z",
       "url": "",
-      "found": ""
+      "found": "2026-11-12T03:19:20.971Z"
     },
     {
       "id": "docker-engine",
@@ -133,10 +133,10 @@
       "group": "Homelab & servers",
       "note": "Linux",
       "page": "https://docs.docker.com/engine/install/",
-      "version": "",
-      "date": "",
-      "url": "",
-      "found": ""
+      "version": "29.9.3",
+      "date": "2026-11-03T22:37:18Z",
+      "url": "https://github.com/moby/moby/releases/tag/docker-v29.9.3",
+      "found": "2026-11-12T03:19:20.971Z"
     },
     {
       "id": "plex",
@@ -145,10 +145,10 @@
       "group": "Media & network",
       "note": "Windows, Linux, NAS",
       "page": "https://www.plex.tv/media-server-downloads/",
-      "version": "",
-      "date": "",
+      "version": "1.43.5.11079",
+      "date": "2026-10-23T11:44:26.000Z",
       "url": "",
-      "found": ""
+      "found": "2026-11-12T03:19:20.971Z"
     },
     {
       "id": "jellyfin",
@@ -157,10 +157,10 @@
       "group": "Media & network",
       "note": "Windows, Linux, Docker",
       "page": "https://jellyfin.org/downloads/server",
-      "version": "",
-      "date": "",
-      "url": "",
-      "found": ""
+      "version": "12.4",
+      "date": "2026-10-26T21:30:17Z",
+      "url": "https://github.com/jellyfin/jellyfin/releases/tag/v12.4",
+      "found": "2026-11-12T03:19:20.971Z"
     },
     {
       "id": "tailscale",
@@ -169,10 +169,10 @@
       "group": "Media & network",
       "note": "All platforms",
       "page": "https://tailscale.com/download",
-      "version": "",
+      "version": "1.104.6",
       "date": "",
-      "url": "",
-      "found": ""
+      "url": "https://tailscale.com/changelog",
+      "found": "2026-11-12T03:19:20.971Z"
     },
     {
       "id": "rufus",
@@ -181,10 +181,10 @@
       "group": "Bench tools",
       "note": "Bootable USB maker (Windows)",
       "page": "https://rufus.ie/",
-      "version": "",
-      "date": "",
-      "url": "",
-      "found": ""
+      "version": "4.15",
+      "date": "2026-06-30T11:28:34Z",
+      "url": "https://github.com/pbatard/rufus/releases/tag/v4.15",
+      "found": "2026-11-12T03:19:20.971Z"
     },
     {
       "id": "ventoy",
@@ -193,10 +193,10 @@
       "group": "Bench tools",
       "note": "Multi-ISO boot USB",
       "page": "https://www.ventoy.net/en/download.html",
-      "version": "",
-      "date": "",
-      "url": "",
-      "found": ""
+      "version": "1.1.18",
+      "date": "2026-10-09T05:20:45Z",
+      "url": "https://github.com/ventoy/Ventoy/releases/tag/v1.1.18",
+      "found": "2026-11-12T03:19:20.971Z"
     },
     {
       "id": "rpi-imager",
@@ -205,10 +205,10 @@
       "group": "Bench tools",
       "note": "SD card flasher",
       "page": "https://www.raspberrypi.com/software/",
-      "version": "",
-      "date": "",
-      "url": "",
-      "found": ""
+      "version": "2.0.12",
+      "date": "2026-10-08T16:36:14Z",
+      "url": "https://github.com/raspberrypi/rpi-imager/releases/tag/v2.0.12",
+      "found": "2026-11-12T03:19:20.971Z"
     },
     {
       "id": "balena-etcher",
@@ -217,10 +217,10 @@
       "group": "Bench tools",
       "note": "USB and SD flasher",
       "page": "https://etcher.balena.io/",
-      "version": "",
-      "date": "",
-      "url": "",
-      "found": ""
+      "version": "2.1.9",
+      "date": "2026-10-22T19:24:32Z",
+      "url": "https://github.com/balena-io/etcher/releases/tag/v2.1.9",
+      "found": "2026-11-12T03:19:20.971Z"
     },
     {
       "id": "memtest86plus",
@@ -229,10 +229,10 @@
       "group": "Bench tools",
       "note": "Memory tester",
       "page": "https://www.memtest.org/",
-      "version": "",
-      "date": "",
-      "url": "",
-      "found": ""
+      "version": "9.00",
+      "date": "2026-10-15T17:21:11Z",
+      "url": "https://github.com/memtest86plus/memtest86plus/releases/tag/v9.00",
+      "found": "2026-11-12T03:19:20.971Z"
     },
     {
       "id": "7zip",
@@ -241,10 +241,10 @@
       "group": "Bench tools",
       "note": "File archiver",
       "page": "https://www.7-zip.org/download.html",
-      "version": "",
-      "date": "",
-      "url": "",
-      "found": ""
+      "version": "26.06",
+      "date": "2026-11-07T11:45:33Z",
+      "url": "https://github.com/ip7z/7zip/releases/tag/26.06",
+      "found": "2026-11-12T03:19:20.971Z"
     }
   ]
 }
