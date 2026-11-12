@@ -13,11 +13,11 @@
       "group": "GPU drivers",
       "note": "Windows 10/11",
       "page": "https://www.nvidia.com/en-us/geforce/drivers/",
-      "version": "621.14",
-      "date": "2026-11-04T00:00:00.000Z",
-      "url": "https://www.nvidia.com/en-us/drivers/details/283968/",
-      "found": "2026-11-12T03:30:00.000Z",
-      "file": "https://us.download.nvidia.com/Windows/621.14/621.14-desktop-win10-win11-64bit-international-dch-whql.exe",
+      "version": "621.24",
+      "date": "2026-11-12T00:00:00.000Z",
+      "url": "https://www.nvidia.com/en-us/drivers/details/285320/",
+      "found": "2026-11-12T19:26:12.303Z",
+      "file": "https://us.download.nvidia.com/Windows/621.24/621.24-desktop-win10-win11-64bit-international-dch-whql.exe",
       "fileLabel": "Windows installer"
     },
     {
