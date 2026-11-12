@@ -34,7 +34,7 @@ const reviews = defineCollection({
     specs: z.array(pair).nullish(),
     pros: z.array(z.string()).nullish(),
     cons: z.array(z.string()).nullish(),
-    breakdown: z.array(z.object({ label: z.string(), score: z.coerce.number().min(0).max(10), weight: z.coerce.number().positive().nullish() })).nullish(),
+    breakdown: z.array(z.object({ label: z.string(), score: z.coerce.number().min(0).max(10), weight: z.coerce.number().nullish() /* 0 or less counts as 1, see src/lib/score.js */ })).nullish(),
     charts: z.array(z.object({
       title: z.string(),
       note: z.string().nullish(),

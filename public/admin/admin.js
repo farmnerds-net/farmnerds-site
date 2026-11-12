@@ -195,7 +195,7 @@
       };
     }
     const scoreBig = h('div', { class: 'ourscore' });
-    const scoredParts = () => (rv ? rv.breakdown.get().filter((b) => b.score != null).map((b) => (b.weight == null || b.weight === 1 ? { label: b.label, score: b.score } : b)) : []);
+    const scoredParts = () => (rv ? rv.breakdown.get().filter((b) => b.score != null).map((b) => (b.weight == null || b.weight === 1 || !(b.weight > 0) ? { label: b.label, score: b.score } : b)) : []);
     function drawScore() {
       const parts = scoredParts(), total = ourScore(parts);
       scoreBig.replaceChildren(h('b', {}, total == null ? '–' : total.toFixed(1)), h('span', {}, total == null ? 'Score the parts of the review to get Our score.' : `Our score, from ${parts.length} scored part${parts.length === 1 ? '' : 's'}.`));
