@@ -116,12 +116,19 @@ const nav = [
       const box = themeBtn.getBoundingClientRect();
       const x = box.left + box.width / 2, y = box.top + box.height / 2;
       const reach = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
-      document.startViewTransition(flip).ready.then(() => {
-        root.animate(
-          { clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${reach}px at ${x}px ${y}px)`] },
-          { duration: 600, easing: 'cubic-bezier(.4,0,.2,1)', pseudoElement: '::view-transition-new(root)' }
+      // Going light: the light page grows out of the switch. Going dark: the light page shrinks back into it.
+      const toDark = !root.classList.contains('is-dark');
+      const small = `circle(0px at ${x}px ${y}px)`, big = `circle(${reach}px at ${x}px ${y}px)`;
+      root.classList.toggle('vt-shrink', toDark);
+      const vt = document.startViewTransition(flip);
+      let sweep;
+      vt.ready.then(() => {
+        sweep = root.animate(
+          { clipPath: toDark ? [big, small] : [small, big] },
+          { duration: 600, easing: 'cubic-bezier(.4,0,.2,1)', fill: 'both', pseudoElement: toDark ? '::view-transition-old(root)' : '::view-transition-new(root)' }
         );
       }).catch(() => {});
+      vt.finished.finally(() => { sweep?.cancel(); root.classList.remove('vt-shrink'); });
     });
   </script>
 </body>

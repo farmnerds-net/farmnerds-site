@@ -238,6 +238,8 @@ main{flex:1;width:100%}
 :root.is-dark .themebtn .moon{transform:none;opacity:1}
 :root.is-dark .themebtn .sun{transform:rotate(120deg) scale(0);opacity:0}
 ::view-transition-old(root),::view-transition-new(root){animation:none;mix-blend-mode:normal}
+:root.vt-shrink::view-transition-old(root){z-index:2}
+:root.vt-shrink::view-transition-new(root){z-index:1}
 @media (prefers-reduced-motion:reduce){.themebtn .knob,.themebtn svg{transition:none}}
 footer .vet{flex-basis:100%;margin:0;padding-top:16px;border-top:1px solid var(--line);text-align:center;font:600 13px var(--display);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
 footer .vet b{color:var(--electric);font-weight:700}
