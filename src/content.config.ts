@@ -43,4 +43,15 @@ const reviews = defineCollection({
   }),
 });
 
-export const collections = { articles, reviews };
+// Standing pages (About, Support). Edited from /admin under Pages.
+const pages = defineCollection({
+  loader: glob({ pattern: '*.md', base: './src/content/pages' }),
+  schema: z.object({
+    label: z.string().default(''),
+    title: z.string(),
+    description: z.string().default(''),
+    buttons: z.array(z.object({ label: z.string(), url: z.string().url() })).nullish(),
+  }),
+});
+
+export const collections = { articles, reviews, pages };

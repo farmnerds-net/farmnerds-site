@@ -42,7 +42,8 @@ GitHub pauses scheduled jobs in a repo that has had no activity for 60 days. The
 | Downloads list (updated automatically) | `src/data/downloads.json` |
 | Downloads sidebar box picks | `src/data/downloads-box.json` |
 | What the Downloads page tracks, and how each is checked | `scripts/downloads/sources.mjs` |
-| Pages (home, About, Support) | `src/pages/` |
+| Pages (home) | `src/pages/` |
+| About and Support wording (edit in the editor under **Pages**) | `src/content/pages/` |
 | Look and feel | `src/styles/global.css` |
 | Editor screens | `public/admin/` |
 | Editor server code (login, saving, uploads) | `functions/api/` and `server/` |
