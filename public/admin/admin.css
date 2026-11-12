@@ -133,5 +133,5 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent);outline:0}
 .dli .check small{font:500 12px var(--mono);color:var(--muted)}
 .dli .linkbtn{font-size:12px}
 .dlfix{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:10px;background:var(--surface2);border-radius:10px;padding:12px}
-.dlfix label:last-child{grid-column:1/-1}
+.dlfix label:nth-child(n+3){grid-column:1/-1}
 .dlfix[hidden]{display:none}

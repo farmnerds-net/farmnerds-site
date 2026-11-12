@@ -7,7 +7,7 @@ const desc = 'The newest GPU drivers, homelab software and bench tools, checked 
 <Base title="Downloads" description={desc} section="downloads">
   <div class="stack">
     <div class="pagehead"><span class="chip">Downloads</span><h1>Downloads</h1>
-      <p>{desc} Every link goes straight to the maker's own download page, so you always get the real file.</p></div>
+      <p>{desc} Every link goes to the maker's own servers, so you always get the real file.</p></div>
     {groups.map(({ g, items }) => (
       <section class="card dlgroup">
         <div class="sh"><h2>{g}</h2><span class="trace"></span></div>
@@ -18,14 +18,23 @@ const desc = 'The newest GPU drivers, homelab software and bench tools, checked 
               <div class="ver"><span>Version</span>{d.version || 'Checking…'}</div>
               <div class="when"><span>Released</span>{d.date ? <time datetime={d.date}>{dlDate(d.date)}</time> : '—'}</div>
               <div class="go">
-                {d.url && d.url !== d.page && <a class="btn ghost" href={d.url} target="_blank" rel="noopener">Notes</a>}
-                <a class="btn" href={d.page} target="_blank" rel="noopener">Get it ↗</a>
+                {d.file ? (
+                  <>
+                    <a class="btn ghost" href={d.url || d.page} target="_blank" rel="noopener" title={d.url ? 'Release notes' : `${d.vendor}'s download page`}>{d.url ? 'Notes' : 'Page'}</a>
+                    <a class="btn dlbtn" href={d.file} rel="noopener" title={`Download ${d.name} ${d.version} straight from ${d.vendor}`}>Direct →<small>{d.fileLabel}</small></a>
+                  </>
+                ) : (
+                  <>
+                    {d.url && d.url !== d.page && <a class="btn ghost" href={d.url} target="_blank" rel="noopener">Notes</a>}
+                    <a class="btn" href={d.page} target="_blank" rel="noopener">Get →</a>
+                  </>
+                )}
               </div>
             </div>
           ))}
         </div>
       </section>
     ))}
-    <p class="dlfoot">FarmNerds doesn't host any of these files. Versions are checked automatically, so a brand new release can take up to about half an hour to show here.</p>
+    <p class="dlfoot">FarmNerds doesn't host any of these files. "Direct" starts the download straight from the maker's own servers. "Get" opens the maker's download page, for makers that don't offer a direct link. Versions are checked automatically, so a brand new release can take up to about half an hour to show here.</p>
   </div>
 </Base>

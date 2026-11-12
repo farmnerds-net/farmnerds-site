@@ -25,7 +25,7 @@ The posts whose web addresses start with `sample-` are placeholders with made-up
 
 ### Downloads
 
-The **Downloads** page lists the newest GPU drivers, homelab software and bench tools, and links straight to each maker's own download page (we never host files). A free GitHub job checks every maker about every 15 minutes and saves any new version, and the site rebuilds by itself. You can watch it, or run it right away, under the repo's **Actions** tab, "Check downloads".
+The **Downloads** page lists the newest GPU drivers, homelab software and bench tools, with a link on the maker's own servers (we never host files). Where the checker can find the file itself and confirm the link works, the button says **Direct →** and starts the download. Otherwise it says **Get →** and opens the maker's download page. A free GitHub job checks every maker about every 15 minutes and saves any new version, and the site rebuilds by itself. You can watch it, or run it right away, under the repo's **Actions** tab, "Check downloads".
 
 In the editor, **Downloads** lets you pick what shows in the homepage sidebar box and in what order. If a version is ever stuck or wrong (AMD's site sometimes blocks the checker), use **Fix version** there. To track something new, add an entry to `scripts/downloads/sources.mjs`.
 

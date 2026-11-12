@@ -12,5 +12,6 @@ export const dlShort = (iso: string) => (iso ? new Date(iso).toLocaleDateString(
 // "New" means it came out in the last 7 days. The page re-checks this in the visitor's browser too.
 export const NEW_DAYS = 7;
 export const isNew = (d: Download) => !!d.date && Date.now() - +new Date(d.date) < NEW_DAYS * 864e5;
-export const linkFor = (d: Download) => d.page;
+// Straight to the file when we have a working direct link, otherwise the maker's download page.
+export const linkFor = (d: Download) => (d as any).file || d.page;
 export const boxItems = () => BOX.items.map((id) => DOWNLOADS.find((d) => d.id === id)).filter((d): d is Download => !!d);

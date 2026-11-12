@@ -1,13 +1,15 @@
 // Everything the Downloads page tracks. To add something, copy an entry and change it.
 //
-// Every entry links to the maker's own download page. We never host files.
+// We never host files. Every link points at the maker's own servers: the file itself when we can find it, otherwise their download page.
 //   id      short name used in the data file and the sidebar box (letters, numbers, dashes)
 //   name    what visitors see
 //   vendor  who makes it
 //   group   which section of the Downloads page it goes in (see GROUPS)
-//   page    the maker's download page (the "Get it" button)
-//   check   finds the newest version. Returns { version, date?, url? }.
+//   page    the maker's download page (used when there's no direct file link)
+//   check   finds the newest version. Returns { version, date?, url?, file?, fileLabel? }.
 //           `url` (optional) is a better link for this exact version, like release notes.
+//           `file` (optional) is the direct link to the download itself, on the maker's own servers.
+//           `fileLabel` says what that file is, like "Windows installer" or "ISO".
 //           Throw an error if it can't tell; the old version is kept and the error is logged.
 
 export const GROUPS = ['GPU drivers', 'Homelab & servers', 'Media & network', 'Bench tools'];
@@ -40,14 +42,16 @@ const newest = (list) => {
 };
 const isoDate = (s) => { const d = new Date(s); return isNaN(d) ? undefined : d.toISOString(); };
 
-/** Latest full release on GitHub (skips betas). */
-function github(repo) {
+/** Latest full release on GitHub (skips betas). `asset` picks the file to link straight to. */
+function github(repo, asset, fileLabel) {
   return async () => {
     const headers = { Accept: 'application/vnd.github+json', ...(process.env.GITHUB_TOKEN ? { Authorization: `Bearer ${process.env.GITHUB_TOKEN}` } : {}) };
     const r = await get(`https://api.github.com/repos/${repo}/releases/latest`, { json: true, headers });
     const version = String(r.tag_name || r.name || '').replace(/^[^\d]*/, '');
     if (!version) throw new Error('release has no version');
-    return { version, date: r.published_at, url: r.html_url };
+    const names = (r.assets || []).map((a) => a.name);
+    const a = asset && (r.assets || []).find((x) => asset.test(x.name));
+    return { version, date: r.published_at, url: r.html_url, ...(a ? { file: a.browser_download_url, fileLabel } : {}), ...(asset && !a ? { hint: `no asset matched; release has: ${names.join(', ')}` } : {}) };
   };
 }
 
@@ -61,11 +65,12 @@ function githubTag(repo) {
 }
 
 /** Newest file in a plain "index of" folder listing (or a list of mirrors) that matches `re` (first group = version). */
-function listing(urls, re) {
+function listing(urls, re, fileLabel) {
   return async () => {
     let html, lastErr;
     // Try each mirror in turn until one answers.
-    for (const url of [].concat(urls)) { try { html = await get(url); break; } catch (e) { lastErr = e; } }
+    let base;
+    for (const url of [].concat(urls)) { try { html = await get(url); base = url; break; } catch (e) { lastErr = e; } }
     if (html == null) throw lastErr;
     const found = [];
     for (const m of html.matchAll(new RegExp(re.source, 'g'))) {
@@ -73,10 +78,10 @@ function listing(urls, re) {
       const end = html.indexOf('\n', m.index);
       const line = html.slice(m.index, end < 0 ? undefined : end);
       const d = line.match(/(\d{1,2})-([A-Za-z]{3})-(\d{4})|(\d{4}-\d{2}-\d{2})/);
-      found.push({ version: m[1], date: d ? isoDate(d[4] || `${d[2]} ${d[1]}, ${d[3]}`) : undefined });
+      found.push({ version: m[1], name: m[0], date: d ? isoDate(d[4] || `${d[2]} ${d[1]}, ${d[3]}`) : undefined });
     }
     const best = newest(found);
-    return { version: best.version, date: best.date };
+    return { version: best.version, date: best.date, file: new URL(best.name, base).href.replace(/^http:/, 'https:'), fileLabel };
   };
 }
 
@@ -85,14 +90,14 @@ async function nvidiaGeforce() {
   const j = await get('https://gfwsl.geforce.com/services_toolkit/services/com/nvidia/services/AjaxDriverService.php?func=DriverManualLookup&psid=127&pfid=995&osID=57&languageCode=1033&isWHQL=1&dch=1&sort1=0&numberOfResults=1', { json: true });
   const d = j?.IDS?.[0]?.downloadInfo;
   if (!d?.Version) throw new Error('NVIDIA lookup returned no driver');
-  return { version: d.Version, date: isoDate(String(d.ReleaseDateTime || '').replace(/^[A-Za-z]{3}\s+/, '')), url: d.DetailsURL };
+  return { version: d.Version, date: isoDate(String(d.ReleaseDateTime || '').replace(/^[A-Za-z]{3}\s+/, '')), url: d.DetailsURL, file: d.DownloadURL, fileLabel: 'Windows installer' };
 }
 
 async function nvidiaLinux() {
   const txt = await get('https://download.nvidia.com/XFree86/Linux-x86_64/latest.txt');
-  const version = txt.trim().split(/\s+/)[0];
+  const [version, path] = txt.trim().split(/\s+/);
   if (!/^\d+\.\d+/.test(version)) throw new Error('unexpected latest.txt');
-  return { version };
+  return { version, file: path ? `https://download.nvidia.com/XFree86/Linux-x86_64/${path}` : undefined, fileLabel: '.run installer' };
 }
 
 // AMD and Intel may turn automated checks away. If one keeps failing, fix the version by hand in /admin.
@@ -109,26 +114,33 @@ async function intelArc() {
   if (at < 0) throw new Error('no 32.0.101.x version on the page');
   const version = text.slice(at).match(/^32\.0\.101\.\d+/)[0];
   const date = text.slice(at, at + 400).match(/\b(\d{1,2}\/\d{1,2}\/\d{4})\b/)?.[1];
-  return { version, date: date ? isoDate(date) : undefined };
+  // The installer link on the page, on Intel's own download mirror.
+  const file = html.match(/https:\/\/downloadmirror\.intel\.com\/[^"'\s<>]+?\.exe/)?.[0];
+  return { version, date: date ? isoDate(date) : undefined, file, fileLabel: 'Windows installer' };
 }
 
 async function trueNas() {
   const html = await get('https://www.truenas.com/download-tn-scale/');
   // Only plain numbers like 25.10.8, so release candidates and betas are skipped.
-  return { version: newest([...html.matchAll(/\/(\d+\.\d+(?:\.\d+)*)\/TrueNAS-(?:SCALE-)?\1\.iso/g)].map((m) => m[1])) };
+  const isos = [...html.matchAll(/https:\/\/[^"'\s<>]+\/(\d+\.\d+(?:\.\d+)*)\/TrueNAS-(?:SCALE-)?\1\.iso/g)].map((m) => ({ version: m[1], file: m[0] }));
+  const best = newest(isos);
+  return { version: best.version, file: best.file, fileLabel: 'ISO' };
 }
 
 async function plex() {
   const j = await get('https://plex.tv/api/downloads/5.json', { json: true });
   const p = j?.computer?.Linux || j?.computer?.Windows;
   if (!p?.version) throw new Error('no Plex version');
-  return { version: p.version.split('-')[0], date: p.release_date ? new Date(p.release_date * 1000).toISOString() : undefined };
+  const win = j?.computer?.Windows?.releases?.find((r) => /x86_64|64/.test(r.build || '') && /\.exe$/.test(r.url || '')) || j?.computer?.Windows?.releases?.find((r) => /\.exe$/.test(r.url || ''));
+  return { version: p.version.split('-')[0], date: p.release_date ? new Date(p.release_date * 1000).toISOString() : undefined, file: win?.url, fileLabel: 'Windows installer' };
 }
 
 async function tailscale() {
   const j = await get('https://pkgs.tailscale.com/stable/?mode=json', { json: true });
   if (!j?.TarballsVersion) throw new Error('no Tailscale version');
-  return { version: j.TarballsVersion, url: 'https://tailscale.com/changelog' };
+  const exes = Array.isArray(j.Exes) ? j.Exes : Object.values(j.Exes || {});
+  const exe = exes.find((n) => typeof n === 'string' && /setup.*\.exe$/i.test(n)) || `tailscale-setup-${j.TarballsVersion}.exe`;
+  return { version: j.TarballsVersion, url: 'https://tailscale.com/changelog', file: `https://pkgs.tailscale.com/stable/${exe}`, fileLabel: 'Windows installer' };
 }
 
 const PROXMOX_ISO = ['https://enterprise.proxmox.com/iso/', 'http://download.proxmox.com/iso/', 'https://download.proxmox.com/iso/'];
@@ -147,19 +159,19 @@ export const SOURCES = [
   // Homelab & servers
   { id: 'proxmox-ve', name: 'Proxmox VE', vendor: 'Proxmox', group: 'Homelab & servers', note: 'ISO installer',
     page: 'https://www.proxmox.com/en/downloads/proxmox-virtual-environment/iso',
-    check: listing(PROXMOX_ISO, /proxmox-ve_(\d+\.\d+-\d+)\.iso/) },
+    check: listing(PROXMOX_ISO, /proxmox-ve_(\d+\.\d+-\d+)\.iso/, 'ISO') },
   { id: 'proxmox-backup', name: 'Proxmox Backup Server', vendor: 'Proxmox', group: 'Homelab & servers', note: 'ISO installer',
     page: 'https://www.proxmox.com/en/downloads/proxmox-backup-server/iso',
-    check: listing(PROXMOX_ISO, /proxmox-backup-server_(\d+\.\d+-\d+)\.iso/) },
+    check: listing(PROXMOX_ISO, /proxmox-backup-server_(\d+\.\d+-\d+)\.iso/, 'ISO') },
   { id: 'truenas', name: 'TrueNAS Community Edition', vendor: 'iXsystems', group: 'Homelab & servers', note: 'ISO installer',
     page: 'https://www.truenas.com/download-tn-scale/', check: trueNas },
   { id: 'home-assistant-os', name: 'Home Assistant OS', vendor: 'Home Assistant', group: 'Homelab & servers', note: 'Images for Pi, x86, VMs',
-    page: 'https://www.home-assistant.io/installation/', check: github('home-assistant/operating-system') },
+    page: 'https://www.home-assistant.io/installation/', check: github('home-assistant/operating-system', /^haos_generic-x86-64-[\d.]+\.img\.xz$/, 'x86-64 image') },
   { id: 'opnsense', name: 'OPNsense', vendor: 'Deciso', group: 'Homelab & servers', note: 'Firewall and router',
     page: 'https://opnsense.org/download/', check: githubTag('opnsense/core') },
   { id: 'debian', name: 'Debian', vendor: 'Debian Project', group: 'Homelab & servers', note: 'amd64 netinst',
     page: 'https://www.debian.org/distrib/',
-    check: listing('https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/', /debian-(\d+\.\d+\.\d+)-amd64-netinst\.iso/) },
+    check: listing('https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/', /debian-(\d+\.\d+\.\d+)-amd64-netinst\.iso/, 'netinst ISO') },
   { id: 'docker-engine', name: 'Docker Engine', vendor: 'Docker', group: 'Homelab & servers', note: 'Linux',
     page: 'https://docs.docker.com/engine/install/', check: github('moby/moby') },
 
@@ -167,21 +179,21 @@ export const SOURCES = [
   { id: 'plex', name: 'Plex Media Server', vendor: 'Plex', group: 'Media & network', note: 'Windows, Linux, NAS',
     page: 'https://www.plex.tv/media-server-downloads/', check: plex },
   { id: 'jellyfin', name: 'Jellyfin Server', vendor: 'Jellyfin', group: 'Media & network', note: 'Windows, Linux, Docker',
-    page: 'https://jellyfin.org/downloads/server', check: github('jellyfin/jellyfin') },
+    page: 'https://jellyfin.org/downloads/server', check: github('jellyfin/jellyfin', /windows.*x64.*\.exe$|setup.*x64.*\.exe$/i, 'Windows installer') },
   { id: 'tailscale', name: 'Tailscale', vendor: 'Tailscale', group: 'Media & network', note: 'All platforms',
     page: 'https://tailscale.com/download', check: tailscale },
 
   // Bench tools
   { id: 'rufus', name: 'Rufus', vendor: 'Pete Batard', group: 'Bench tools', note: 'Bootable USB maker (Windows)',
-    page: 'https://rufus.ie/', check: github('pbatard/rufus') },
+    page: 'https://rufus.ie/', check: github('pbatard/rufus', /^rufus-[\d.]+\.exe$/i, 'Windows app') },
   { id: 'ventoy', name: 'Ventoy', vendor: 'Ventoy', group: 'Bench tools', note: 'Multi-ISO boot USB',
-    page: 'https://www.ventoy.net/en/download.html', check: github('ventoy/Ventoy') },
+    page: 'https://www.ventoy.net/en/download.html', check: github('ventoy/Ventoy', /windows\.zip$/i, 'Windows zip') },
   { id: 'rpi-imager', name: 'Raspberry Pi Imager', vendor: 'Raspberry Pi', group: 'Bench tools', note: 'SD card flasher',
-    page: 'https://www.raspberrypi.com/software/', check: github('raspberrypi/rpi-imager') },
+    page: 'https://www.raspberrypi.com/software/', check: github('raspberrypi/rpi-imager', /\.exe$/i, 'Windows installer') },
   { id: 'balena-etcher', name: 'balenaEtcher', vendor: 'Balena', group: 'Bench tools', note: 'USB and SD flasher',
-    page: 'https://etcher.balena.io/', check: github('balena-io/etcher') },
+    page: 'https://etcher.balena.io/', check: github('balena-io/etcher', /setup.*\.exe$/i, 'Windows installer') },
   { id: 'memtest86plus', name: 'Memtest86+', vendor: 'Memtest86+', group: 'Bench tools', note: 'Memory tester',
-    page: 'https://www.memtest.org/', check: github('memtest86plus/memtest86plus') },
+    page: 'https://www.memtest.org/', check: github('memtest86plus/memtest86plus', /x86_64.*\.iso\.zip$|64.*\.iso\.zip$/i, 'ISO (zip)') },
   { id: '7zip', name: '7-Zip', vendor: 'Igor Pavlov', group: 'Bench tools', note: 'File archiver',
-    page: 'https://www.7-zip.org/download.html', check: github('ip7z/7zip') },
+    page: 'https://www.7-zip.org/download.html', check: github('ip7z/7zip', /^7z\d+-x64\.exe$/i, 'Windows 64-bit installer') },
 ];

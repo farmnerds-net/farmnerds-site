@@ -1,15 +1,15 @@
 ---
-import { BOX, boxItems, dlShort, isNew } from '../lib/downloads';
+import { BOX, boxItems, dlShort, isNew, linkFor } from '../lib/downloads';
 const items = boxItems();
 ---
 {BOX.show && items.length > 0 && (
   <div class="card dlbox">
     <div class="sh"><h2>{BOX.title || 'Latest downloads'}</h2><span class="trace"></span><a href="/downloads/">All</a></div>
     {items.map((d) => (
-      <a class="dl" href={d.page} target="_blank" rel="noopener" data-date={d.date}>
+      <a class="dl" href={linkFor(d)} target="_blank" rel="noopener" data-date={d.date} title={(d as any).file ? `Download ${d.name} ${d.version} (${(d as any).fileLabel || 'file'}) from ${d.vendor}` : `${d.name} on ${d.vendor}'s site`}>
         <span class="n">{d.name}{isNew(d) && <b class="new">New</b>}</span>
         <span class="v">{d.version || 'Checking…'}</span>
-        <time>{dlShort(d.date)}</time>
+        <time>{dlShort(d.date)}{d.version && <span class="kind">{(d as any).file ? 'Direct →' : 'Get →'}</span>}</time>
       </a>
     ))}
   </div>
