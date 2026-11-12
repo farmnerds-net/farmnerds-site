@@ -2,7 +2,7 @@
 import { BOX, boxItems, dlShort, isNew, linkFor } from '../lib/downloads';
 const items = boxItems();
 ---
-{BOX.show && items.length > 0 && (
+{items.length > 0 && (
   <div class="card dlbox">
     <div class="sh"><h2>{BOX.title || 'Latest downloads'}</h2><span class="trace"></span><a href="/downloads/">All</a></div>
     {items.map((d) => (
