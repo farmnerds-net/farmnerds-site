@@ -1,4 +1,5 @@
 import { getCollection } from 'astro:content';
+import { ourScore } from './score.js';
 
 export const CATS = {
   tech: { label: 'Tech', cls: 'c-tech' },
@@ -26,7 +27,7 @@ export function readTime(body = '') {
 export async function allPosts() {
   const keep = (e: any) => import.meta.env.DEV || !e.data.draft;
   const articles = (await getCollection('articles', keep)).map((e) => ({ ...e, type: 'article' as const, url: `/articles/${e.id}/` }));
-  const reviews = (await getCollection('reviews', keep)).map((e) => ({ ...e, type: 'review' as const, url: `/reviews/${e.id}/` }));
+  const reviews = (await getCollection('reviews', keep)).map((e) => ({ ...e, data: { ...e.data, score: ourScore(e.data) ?? 0 }, type: 'review' as const, url: `/reviews/${e.id}/` }));
   return [...articles, ...reviews].sort((a, b) => +b.data.date - +a.data.date);
 }
 export type Post = Awaited<ReturnType<typeof allPosts>>[number];

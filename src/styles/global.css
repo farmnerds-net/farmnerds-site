@@ -217,3 +217,10 @@ body{min-height:100vh;display:flex;flex-direction:column}
 main{flex:1;width:100%}
 .acover{aspect-ratio:3/1;max-width:980px}
 @media (max-width:620px){.acover{aspect-ratio:16/9}}
+.ring{margin-bottom:18px}
+.ring span{position:absolute;left:0;right:0;top:100%;margin-top:4px;text-align:center;font:500 10px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+.row.total{border-top:1px solid var(--line);margin-top:8px;padding-top:12px}
+.row.total span{font-weight:700} .row.total i::before{background:var(--ember);opacity:1} .row.total b{color:var(--ember);font-weight:700;font-size:15px}
+.sc.part{display:inline-block;margin-left:12px;font-size:14px;padding:5px 8px;min-width:0;vertical-align:middle}
+.steps button em{font:700 12px var(--mono);font-style:normal;color:var(--ember)}
+.steps button[aria-current="true"] em{color:inherit}

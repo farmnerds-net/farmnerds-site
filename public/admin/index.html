@@ -5,8 +5,25 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="robots" content="noindex" />
   <title>FarmNerds editor</title>
+  <link rel="icon" type="image/png" href="/favicon.png" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" />
+  <link rel="stylesheet" href="/admin/vendor/toastui-editor.css" />
+  <link rel="stylesheet" href="/admin/vendor/toastui-editor-dark.css" />
+  <link rel="stylesheet" href="/admin/admin.css" />
 </head>
 <body>
-  <script src="https://unpkg.com/@sveltia/cms/dist/sveltia-cms.js"></script>
+  <header class="bar" id="bar" hidden>
+    <a class="brand" href="#/"><span class="logo-mark"></span><b>FARM<i>NERDS</i></b><small>editor</small></a>
+    <nav>
+      <a href="#/" data-nav="list">Posts</a>
+      <a href="#/settings" data-nav="settings">FarmLab box</a>
+      <a href="/" target="_blank" rel="noopener">View site ↗</a>
+      <button type="button" class="linkbtn" id="signout">Sign out</button>
+    </nav>
+  </header>
+  <main id="app"><p class="muted center">Loading…</p></main>
+  <div id="toast" role="status" aria-live="polite" hidden></div>
+  <script src="/admin/vendor/toastui-editor.js"></script>
+  <script src="/admin/admin.js"></script>
 </body>
 </html>

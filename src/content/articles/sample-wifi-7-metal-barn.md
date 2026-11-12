@@ -1,8 +1,8 @@
 ---
 title: "Wi-Fi 7 mesh across a metal barn: three kits tested"
-description: Sheet metal eats signal. One kit held 600 Mbps at the far stall.
-date: 2026-11-11T14:15:00-06:00
-category: tech
+description: "Sheet metal eats signal. One kit held 600 Mbps at the far stall."
+date: "2026-11-11T14:15:00-06:00"
+category: "tech"
 featured: true
 sample: true
 ---
