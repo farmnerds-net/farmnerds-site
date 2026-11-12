@@ -8,7 +8,7 @@ draft: true
 kind: "Equipment"
 score: 9
 approved: false
-breakdown: [{"label":"Performance","score":9.9},{"label":"Build quality","score":9},{"label":"Ease of use","score":9},{"label":"Value","score":8,"weight":-1}]
+breakdown: [{"label":"Performance","score":9.9},{"label":"Build quality","score":9},{"label":"Ease of use","score":9},{"label":"Value","score":8}]
 ---
 
 
