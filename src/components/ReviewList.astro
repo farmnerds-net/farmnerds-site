@@ -1,0 +1,12 @@
+---
+import { CATS } from '../lib/posts';
+interface Props { reviews: any[] }
+const { reviews } = Astro.props;
+---
+{reviews.map((r) => (
+  <a class:list={['rv', CATS[r.data.category as keyof typeof CATS].cls]} href={r.url}>
+    <div><span class="chip">{r.data.kind}</span><span class="t">{r.data.title}</span></div>
+    <span class="sc">{r.data.score.toFixed(1)}</span>
+  </a>
+))}
+{reviews.length === 0 && <p class="empty" style="border:0;padding:0">The first review is on the bench.</p>}

@@ -1,0 +1,83 @@
+---
+import Base from '../layouts/Base.astro';
+import Thumb from '../components/Thumb.astro';
+import FeedItem from '../components/FeedItem.astro';
+import ReviewList from '../components/ReviewList.astro';
+import { allPosts, CATS, fmtDay, fmtShort, readTime } from '../lib/posts';
+import lab from '../data/farmlab.json';
+
+const posts = await allPosts();
+const top = [...posts.filter((p) => p.data.featured), ...posts.filter((p) => !p.data.featured)].slice(0, 3);
+const rest = posts.filter((p) => !top.includes(p)).slice(0, 14);
+const days = new Map<string, typeof posts>();
+for (const p of rest) { const k = fmtDay(p.data.date); days.set(k, [...(days.get(k) || []), p]); }
+const reviews = posts.filter((p) => p.type === 'review').slice(0, 5);
+const bands = (['tech', 'homelab', 'homestead'] as const).map((c) => ({ c, ...CATS[c], posts: posts.filter((p) => p.data.category === c).slice(0, 4) }));
+const chip = (p: any) => (p.type === 'review' ? `Review · ${CATS[p.data.category as keyof typeof CATS].label}` : CATS[p.data.category as keyof typeof CATS].label);
+const pct = Math.round((lab.storageUsed / lab.storageTotal) * 100);
+---
+<Base section="latest">
+  <div class="home">
+    {top.length > 0 && (
+      <div class="mosaic">
+        {top.map((p, i) => (
+          <a class:list={['feat', CATS[p.data.category].cls, { big: i === 0 }]} href={p.url}>
+            {p.data.image ? <img src={p.data.image} alt="" /> : <canvas class="art" data-seed={i === 0 ? 11 : undefined} data-n={i === 0 ? 26 : 12}></canvas>}
+            {i === 0 && !p.data.image && <span class="logo-mark mark"></span>}
+            <div class="txt">
+              <span class="chip">{chip(p)}</span>
+              {i === 0 ? <h2>{p.data.title}</h2> : <h3>{p.data.title}</h3>}
+              {i === 0 && <p>{p.data.description}</p>}
+              <span class="meta">{fmtShort(p.data.date)} · {readTime(p.body)} min read{p.type === 'review' && ` · Score ${p.data.score.toFixed(1)}`}</span>
+            </div>
+          </a>
+        ))}
+      </div>
+    )}
+
+    <div class="cols">
+      <div>
+        <div class="sh"><h2>Latest</h2><span class="trace"></span><a href="/rss.xml">RSS</a></div>
+        {[...days].map(([day, items]) => (
+          <>
+            <div class="day">{day}</div>
+            {items.map((p) => <FeedItem post={p} when="time" />)}
+          </>
+        ))}
+        {posts.length === 0 && <p class="empty">Nothing published yet. The first posts are on the way.</p>}
+      </div>
+
+      <aside class="rail">
+        <div class="card">
+          <div class="sh c-fl"><h2>Reviews</h2><span class="trace"></span><a href="/reviews/">All</a></div>
+          <ReviewList reviews={reviews} />
+        </div>
+        {lab.show && (
+          <div class="card">
+            <div class="sh"><h2>The FarmLab</h2><span class="trace"></span></div>
+            <div class="lab-grid">
+              <div><b>{lab.nodes}</b><span>Nodes</span></div><div><b>{lab.guests}</b><span>Guests</span></div>
+              <div><b>{lab.power}</b><span>Power draw</span></div><div><b>{lab.uptime}</b><span>Uptime</span></div>
+            </div>
+            <div class="meter"><span>Storage · {lab.storageUsed} of {lab.storageTotal} TB</span><i style={`--v:${pct}%`}></i></div>
+          </div>
+        )}
+        <div class="card about"><span class="logo-mark"></span>
+          <p><b style="color:var(--fg)">Powered by brisket, bandwidth, and bad ideas that work.</b> Tech, homelab and homestead notes from Stephenville, Texas.</p></div>
+      </aside>
+    </div>
+
+    <div class="bands">
+      {bands.map((b) => (
+        <div class:list={['band', b.cls]}>
+          <h2><a href={`/${b.c}/`}>{b.label}</a></h2>
+          {b.posts[0] && <a href={b.posts[0].url}><div class="ph"><Thumb post={b.posts[0]} /></div><h3>{b.posts[0].data.title}</h3></a>}
+          <ul class="mini">
+            {b.posts.slice(1).map((p) => <li><a href={p.url}>{p.data.title}</a><time>{fmtShort(p.data.date)}</time></li>)}
+          </ul>
+          {b.posts.length === 0 && <p class="empty" style="border:0;padding:0">Coming soon.</p>}
+        </div>
+      ))}
+    </div>
+  </div>
+</Base>

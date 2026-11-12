@@ -1,0 +1,27 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection, render } from 'astro:content';
+import { CATS, fmtDate, readTime, seed } from '../../lib/posts';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('articles', (e) => import.meta.env.DEV || !e.data.draft);
+  return posts.map((post) => ({ params: { id: post.id }, props: { post } }));
+}
+const { post } = Astro.props;
+const { Content } = await render(post);
+const cat = CATS[post.data.category];
+---
+<Base title={post.data.title} description={post.data.description} section={post.data.category} image={post.data.image}>
+  <article class:list={['stack', cat.cls]}>
+    <div class="crumbs"><a href="/">Home</a> / <a href={`/${post.data.category}/`}>{cat.label}</a></div>
+    <header class="ahead">
+      <span class="chip">{cat.label}</span>
+      <h1>{post.data.title}</h1>
+      {post.data.description && <p class="lede">{post.data.description}</p>}
+      <div class="by"><span>By {post.data.author}</span><span>{fmtDate(post.data.date)}</span><span>{readTime(post.body)} min read</span></div>
+    </header>
+    <div class="acover">{post.data.image ? <img src={post.data.image} alt="" /> : <canvas class="art" data-seed={seed(post.id)} data-n="22"></canvas>}</div>
+    {post.data.sample && <p class="sample">Sample post. It only shows the layout. Delete it in the editor before launch.</p>}
+    <div class="md"><Content /></div>
+  </article>
+</Base>
