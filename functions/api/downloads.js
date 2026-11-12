@@ -24,7 +24,7 @@ export async function onRequestPut({ request, env }) {
   };
   out.boxSha = (await writeFile(env, BOX, { text: JSON.stringify(cleanBox, null, 2) + '\n', sha: boxSha, message: 'Update downloads box' })).sha;
 
-  // A hand fix only touches the version, date and link. The next automatic check moves it on when something newer comes out.
+  // A hand fix only touches the version, date and links. The next automatic check moves it on when something newer comes out.
   const url = (s) => (/^https:\/\/[^\s"<>]+$/.test(s || '') ? s : '');
   let fixed = 0;
   for (const item of data.items) {
@@ -32,8 +32,10 @@ export async function onRequestPut({ request, env }) {
     if (!f || !String(f.version || '').trim()) continue;
     const version = String(f.version).trim().slice(0, 40);
     const date = f.date && !isNaN(new Date(f.date)) ? new Date(f.date + 'T12:00:00Z').toISOString() : item.date;
-    if (version === item.version && date === item.date && url(f.url) === item.url) continue;
-    Object.assign(item, { version, date, url: url(f.url), found: new Date().toISOString() });
+    const file = url(f.file);
+    if (version === item.version && date === item.date && url(f.url) === item.url && file === (item.file || '')) continue;
+    // A hand-entered direct link replaces the old one; leaving it empty sends visitors to the vendor's page.
+    Object.assign(item, { version, date, url: url(f.url), file, fileLabel: file ? String(f.fileLabel || item.fileLabel || 'Download').slice(0, 40) : '', found: new Date().toISOString() });
     fixed++;
   }
   if (fixed) {

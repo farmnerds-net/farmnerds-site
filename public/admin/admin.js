@@ -349,13 +349,15 @@ h('div', { class: 'col side' },
       const groups = list.groups || [...new Set(items.map((i) => i.group))];
       all.replaceChildren(...groups.map((g) => h('div', { class: 'dlg' }, h('h3', {}, g), ...items.filter((i) => i.group === g).map((i) => {
         const tick = h('input', { type: 'checkbox', checked: picks.includes(i.id), onchange: () => { picks = tick.checked ? [...picks, i.id] : picks.filter((x) => x !== i.id); dirty = true; drawOrder(); } });
-        const f = fixes[i.id] ||= { version: i.version, date: i.date ? i.date.slice(0, 10) : '', url: i.url || '' };
+        const f = fixes[i.id] ||= { version: i.version, date: i.date ? i.date.slice(0, 10) : '', url: i.url || '', file: i.file || '', fileLabel: i.fileLabel || '' };
         const fixBox = h('div', { class: 'dlfix', hidden: true },
           h('label', { class: 'f' }, 'Version', h('input', { type: 'text', value: f.version, oninput: (e) => (f.version = e.target.value) })),
           h('label', { class: 'f' }, 'Release date', h('input', { type: 'date', value: f.date, oninput: (e) => (f.date = e.target.value) })),
-          h('label', { class: 'f' }, 'Release notes link (optional)', h('input', { type: 'url', value: f.url, placeholder: 'https://', oninput: (e) => (f.url = e.target.value) })));
+          h('label', { class: 'f' }, 'Release notes link (optional)', h('input', { type: 'url', value: f.url, placeholder: 'https://', oninput: (e) => (f.url = e.target.value) })),
+          h('label', { class: 'f' }, h('span', {}, 'Direct download link (optional) ', h('small', {}, 'The file itself, on the maker\'s site. Leave empty to send people to their download page.')), h('input', { type: 'url', value: f.file, placeholder: 'https://', oninput: (e) => (f.file = e.target.value) })),
+          h('label', { class: 'f' }, 'What the file is', h('input', { type: 'text', value: f.fileLabel, placeholder: 'Windows installer', maxLength: 40, oninput: (e) => (f.fileLabel = e.target.value) })));
         return h('div', { class: 'dli' },
-          h('label', { class: 'check' }, tick, h('span', {}, h('b', {}, i.name), h('small', {}, `${i.version || 'not checked yet'}${i.date ? ' · ' + fmtDate(i.date) : ''}`))),
+          h('label', { class: 'check' }, tick, h('span', {}, h('b', {}, i.name), h('small', {}, `${i.version || 'not checked yet'}${i.date ? ' · ' + fmtDate(i.date) : ''} · ${i.file ? 'direct download' : 'links to vendor page'}`))),
           h('button', { type: 'button', class: 'linkbtn', onclick: () => (fixBox.hidden = !fixBox.hidden) }, 'Fix version'), fixBox);
       }))));
     }
@@ -363,7 +365,7 @@ h('div', { class: 'col side' },
       btn.disabled = true;
       try {
         const changed = {};
-        for (const [id, f] of Object.entries(fixes)) { const i = byId.get(id); if (f.version !== i.version || f.date !== (i.date || '').slice(0, 10) || f.url !== (i.url || '')) changed[id] = f; }
+        for (const [id, f] of Object.entries(fixes)) { const i = byId.get(id); if (f.version !== i.version || f.date !== (i.date || '').slice(0, 10) || f.url !== (i.url || '') || f.file !== (i.file || '') || f.fileLabel !== (i.fileLabel || '')) changed[id] = f; }
         const r = await api('downloads', { method: 'PUT', body: { box: { show: show.checked, title: title.value, items: picks }, boxSha: sha, fixes: changed } });
         sha = r.boxSha; dirty = false;
         toast(r.fixed ? `Saved, and fixed ${r.fixed} version${r.fixed > 1 ? 's' : ''}. The site updates in about a minute.` : 'Saved. The site updates in about a minute.');

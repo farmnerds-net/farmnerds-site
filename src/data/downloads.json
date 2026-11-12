@@ -16,7 +16,9 @@
       "version": "621.14",
       "date": "2026-11-04T00:00:00.000Z",
       "url": "https://www.nvidia.com/en-us/drivers/details/283968/",
-      "found": "2026-11-12T03:30:00.000Z"
+      "found": "2026-11-12T03:30:00.000Z",
+      "file": "https://us.download.nvidia.com/Windows/621.14/621.14-desktop-win10-win11-64bit-international-dch-whql.exe",
+      "fileLabel": "Windows installer"
     },
     {
       "id": "amd-adrenalin",
@@ -28,7 +30,9 @@
       "version": "26.10.2",
       "date": "2026-10-29T00:00:00.000Z",
       "url": "",
-      "found": "2026-11-12T03:30:00.000Z"
+      "found": "2026-11-12T03:30:00.000Z",
+      "file": "",
+      "fileLabel": ""
     },
     {
       "id": "intel-arc",
@@ -40,7 +44,9 @@
       "version": "32.0.101.9175",
       "date": "2026-11-04T00:00:00.000Z",
       "url": "",
-      "found": "2026-11-12T03:30:00.000Z"
+      "found": "2026-11-12T03:30:00.000Z",
+      "file": "https://downloadmirror.intel.com/932449/gfx_win_101.9175.exe",
+      "fileLabel": "Windows installer"
     },
     {
       "id": "nvidia-linux",
@@ -52,7 +58,9 @@
       "version": "595.104.02",
       "date": "",
       "url": "",
-      "found": "2026-11-12T03:19:20.971Z"
+      "found": "2026-11-12T03:19:20.971Z",
+      "file": "https://download.nvidia.com/XFree86/Linux-x86_64/595.104.02/NVIDIA-Linux-x86_64-595.104.02.run",
+      "fileLabel": ".run installer"
     },
     {
       "id": "proxmox-ve",
@@ -64,7 +72,9 @@
       "version": "9.2-1",
       "date": "",
       "url": "",
-      "found": "2026-11-12T03:20:51.889Z"
+      "found": "2026-11-12T03:20:51.889Z",
+      "file": "https://enterprise.proxmox.com/iso/proxmox-ve_9.2-1.iso",
+      "fileLabel": "ISO"
     },
     {
       "id": "proxmox-backup",
@@ -76,7 +86,9 @@
       "version": "4.2-1",
       "date": "",
       "url": "",
-      "found": "2026-11-12T03:20:51.889Z"
+      "found": "2026-11-12T03:20:51.889Z",
+      "file": "https://enterprise.proxmox.com/iso/proxmox-backup-server_4.2-1.iso",
+      "fileLabel": "ISO"
     },
     {
       "id": "truenas",
@@ -88,7 +100,9 @@
       "version": "25.10.8",
       "date": "",
       "url": "",
-      "found": "2026-11-12T03:30:00.000Z"
+      "found": "2026-11-12T03:30:00.000Z",
+      "file": "https://download.sys.truenas.net/TrueNAS-SCALE-Goldeye/25.10.8/TrueNAS-SCALE-25.10.8.iso",
+      "fileLabel": "ISO"
     },
     {
       "id": "home-assistant-os",
@@ -100,7 +114,9 @@
       "version": "18.5",
       "date": "2026-11-06T13:45:43Z",
       "url": "https://github.com/home-assistant/operating-system/releases/tag/18.5",
-      "found": "2026-11-12T03:19:20.971Z"
+      "found": "2026-11-12T03:19:20.971Z",
+      "file": "",
+      "fileLabel": ""
     },
     {
       "id": "opnsense",
@@ -112,7 +128,9 @@
       "version": "26.7.9",
       "date": "",
       "url": "",
-      "found": "2026-11-12T03:19:20.971Z"
+      "found": "2026-11-12T03:19:20.971Z",
+      "file": "",
+      "fileLabel": ""
     },
     {
       "id": "debian",
@@ -124,7 +142,9 @@
       "version": "13.7.0",
       "date": "2026-09-12T00:00:00.000Z",
       "url": "",
-      "found": "2026-11-12T03:19:20.971Z"
+      "found": "2026-11-12T03:19:20.971Z",
+      "file": "https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/debian-13.7.0-amd64-netinst.iso",
+      "fileLabel": "netinst ISO"
     },
     {
       "id": "docker-engine",
@@ -136,7 +156,9 @@
       "version": "29.9.3",
       "date": "2026-11-03T22:37:18Z",
       "url": "https://github.com/moby/moby/releases/tag/docker-v29.9.3",
-      "found": "2026-11-12T03:19:20.971Z"
+      "found": "2026-11-12T03:19:20.971Z",
+      "file": "",
+      "fileLabel": ""
     },
     {
       "id": "plex",
@@ -148,7 +170,9 @@
       "version": "1.43.5.11079",
       "date": "2026-10-23T11:44:26.000Z",
       "url": "",
-      "found": "2026-11-12T03:19:20.971Z"
+      "found": "2026-11-12T03:19:20.971Z",
+      "file": "https://downloads.plex.tv/plex-media-server-new/1.43.5.11079-b3b13e506/windows/PlexMediaServer-1.43.5.11079-b3b13e506-x86_64.exe",
+      "fileLabel": "Windows installer"
     },
     {
       "id": "jellyfin",
@@ -160,7 +184,9 @@
       "version": "12.4",
       "date": "2026-10-26T21:30:17Z",
       "url": "https://github.com/jellyfin/jellyfin/releases/tag/v12.4",
-      "found": "2026-11-12T03:19:20.971Z"
+      "found": "2026-11-12T03:19:20.971Z",
+      "file": "",
+      "fileLabel": ""
     },
     {
       "id": "tailscale",
@@ -172,7 +198,9 @@
       "version": "1.104.6",
       "date": "",
       "url": "https://tailscale.com/changelog",
-      "found": "2026-11-12T03:19:20.971Z"
+      "found": "2026-11-12T03:19:20.971Z",
+      "file": "https://pkgs.tailscale.com/stable/tailscale-setup-1.104.6.exe",
+      "fileLabel": "Windows installer"
     },
     {
       "id": "rufus",
@@ -184,7 +212,9 @@
       "version": "4.15",
       "date": "2026-06-30T11:28:34Z",
       "url": "https://github.com/pbatard/rufus/releases/tag/v4.15",
-      "found": "2026-11-12T03:19:20.971Z"
+      "found": "2026-11-12T03:19:20.971Z",
+      "file": "https://github.com/pbatard/rufus/releases/download/v4.15/rufus-4.15.exe",
+      "fileLabel": "Windows app"
     },
     {
       "id": "ventoy",
@@ -196,7 +226,9 @@
       "version": "1.1.18",
       "date": "2026-10-09T05:20:45Z",
       "url": "https://github.com/ventoy/Ventoy/releases/tag/v1.1.18",
-      "found": "2026-11-12T03:19:20.971Z"
+      "found": "2026-11-12T03:19:20.971Z",
+      "file": "https://github.com/ventoy/Ventoy/releases/download/v1.1.18/ventoy-1.1.18-windows.zip",
+      "fileLabel": "Windows zip"
     },
     {
       "id": "rpi-imager",
@@ -208,7 +240,9 @@
       "version": "2.0.12",
       "date": "2026-10-08T16:36:14Z",
       "url": "https://github.com/raspberrypi/rpi-imager/releases/tag/v2.0.12",
-      "found": "2026-11-12T03:19:20.971Z"
+      "found": "2026-11-12T03:19:20.971Z",
+      "file": "https://github.com/raspberrypi/rpi-imager/releases/download/v2.0.12/imager-v2.0.12.exe",
+      "fileLabel": "Windows installer"
     },
     {
       "id": "balena-etcher",
@@ -220,7 +254,9 @@
       "version": "2.1.9",
       "date": "2026-10-22T19:24:32Z",
       "url": "https://github.com/balena-io/etcher/releases/tag/v2.1.9",
-      "found": "2026-11-12T03:19:20.971Z"
+      "found": "2026-11-12T03:19:20.971Z",
+      "file": "https://github.com/balena-io/etcher/releases/download/v2.1.9/balenaEtcher-2.1.9.Setup.exe",
+      "fileLabel": "Windows installer"
     },
     {
       "id": "memtest86plus",
@@ -232,7 +268,9 @@
       "version": "9.00",
       "date": "2026-10-15T17:21:11Z",
       "url": "https://github.com/memtest86plus/memtest86plus/releases/tag/v9.00",
-      "found": "2026-11-12T03:19:20.971Z"
+      "found": "2026-11-12T03:19:20.971Z",
+      "file": "",
+      "fileLabel": ""
     },
     {
       "id": "7zip",
@@ -244,7 +282,9 @@
       "version": "26.06",
       "date": "2026-11-07T11:45:33Z",
       "url": "https://github.com/ip7z/7zip/releases/tag/26.06",
-      "found": "2026-11-12T03:19:20.971Z"
+      "found": "2026-11-12T03:19:20.971Z",
+      "file": "https://github.com/ip7z/7zip/releases/download/26.06/7z2606-x64.exe",
+      "fileLabel": "Windows 64-bit installer"
     }
   ]
 }
