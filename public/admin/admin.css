@@ -49,7 +49,7 @@ main{max-width:1240px;margin:0 auto;padding:24px 20px 80px}
 /* fields */
 label.f{display:flex;flex-direction:column;gap:6px;font:600 12px var(--body);color:var(--muted);letter-spacing:.04em;text-transform:uppercase}
 label.f small{font:400 12px var(--body);text-transform:none;letter-spacing:0}
-input[type=text],input[type=password],input[type=number],input[type=datetime-local],select,textarea{
+input[type=text],input[type=password],input[type=number],input[type=datetime-local],input[type=date],input[type=url],select,textarea{
   width:100%;font:15px var(--body);color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:9px 11px}
 textarea{resize:vertical;min-height:70px}
 input:focus,select:focus,textarea:focus{border-color:var(--accent);outline:0}
@@ -119,3 +119,19 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent);outline:0}
 .toastui-editor-defaultUI:not(.toastui-editor-dark) .toastui-editor-main,
 .toastui-editor-defaultUI:not(.toastui-editor-dark) .toastui-editor-ww-container,
 .toastui-editor-defaultUI:not(.toastui-editor-dark) .ProseMirror{background:var(--bg)}
+
+/* downloads screen */
+.dlwrap{display:grid;grid-template-columns:minmax(0,380px) minmax(0,1fr);gap:22px;align-items:start}
+@media (max-width:900px){.dlwrap{grid-template-columns:minmax(0,1fr)}}
+.dlorder{display:flex;flex-direction:column;gap:8px}
+.dlo{display:grid;grid-template-columns:26px minmax(0,1fr) auto auto auto;gap:8px;align-items:center;background:var(--surface2);border-radius:10px;padding:8px 10px}
+.dlo .num{font:700 13px var(--mono);color:var(--accent)}
+.dlo b{font-weight:600;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dlg h3{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:6px 0 4px}
+.dli{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 12px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
+.dli .check span{display:flex;flex-direction:column}
+.dli .check small{font:500 12px var(--mono);color:var(--muted)}
+.dli .linkbtn{font-size:12px}
+.dlfix{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:10px;background:var(--surface2);border-radius:10px;padding:12px}
+.dlfix label:last-child{grid-column:1/-1}
+.dlfix[hidden]{display:none}

@@ -323,15 +323,75 @@ h('div', { class: 'col side' },
     dirty = false;
   }
 
+  /* ---------- Downloads box ---------- */
+  async function showDownloads() {
+    app.replaceChildren(h('p', { class: 'muted center' }, 'Loading…'));
+    const { list, box, boxSha } = await api('downloads');
+    const items = list.items || [];
+    const byId = new Map(items.map((i) => [i.id, i]));
+    let picks = (box.items || []).filter((id) => byId.has(id));
+    let sha = boxSha;
+    const show = h('input', { type: 'checkbox', checked: box.show !== false });
+    const title = h('input', { type: 'text', value: box.title || 'Latest downloads', maxLength: 60 });
+    const order = h('div', { class: 'dlorder' });
+    const all = h('div', { class: 'dlpick' });
+
+    function drawOrder() {
+      order.replaceChildren(...(picks.length ? picks.map((id, i) => h('div', { class: 'dlo' },
+        h('span', { class: 'num' }, String(i + 1)), h('b', {}, byId.get(id).name),
+        h('button', { type: 'button', class: 'btn small', disabled: i === 0, title: 'Move up', onclick: () => { [picks[i - 1], picks[i]] = [picks[i], picks[i - 1]]; dirty = true; drawOrder(); } }, '↑'),
+        h('button', { type: 'button', class: 'btn small', disabled: i === picks.length - 1, title: 'Move down', onclick: () => { [picks[i + 1], picks[i]] = [picks[i], picks[i + 1]]; dirty = true; drawOrder(); } }, '↓'),
+        h('button', { type: 'button', class: 'btn small danger', title: 'Take out of the box', onclick: () => { picks = picks.filter((x) => x !== id); dirty = true; drawOrder(); drawAll(); } }, '✕')))
+        : [h('p', { class: 'hint', style: 'margin:0' }, 'Nothing picked yet. Tick some downloads below.')]));
+    }
+    const fixes = {};
+    function drawAll() {
+      const groups = list.groups || [...new Set(items.map((i) => i.group))];
+      all.replaceChildren(...groups.map((g) => h('div', { class: 'dlg' }, h('h3', {}, g), ...items.filter((i) => i.group === g).map((i) => {
+        const tick = h('input', { type: 'checkbox', checked: picks.includes(i.id), onchange: () => { picks = tick.checked ? [...picks, i.id] : picks.filter((x) => x !== i.id); dirty = true; drawOrder(); } });
+        const f = fixes[i.id] ||= { version: i.version, date: i.date ? i.date.slice(0, 10) : '', url: i.url || '' };
+        const fixBox = h('div', { class: 'dlfix', hidden: true },
+          h('label', { class: 'f' }, 'Version', h('input', { type: 'text', value: f.version, oninput: (e) => (f.version = e.target.value) })),
+          h('label', { class: 'f' }, 'Release date', h('input', { type: 'date', value: f.date, oninput: (e) => (f.date = e.target.value) })),
+          h('label', { class: 'f' }, 'Release notes link (optional)', h('input', { type: 'url', value: f.url, placeholder: 'https://', oninput: (e) => (f.url = e.target.value) })));
+        return h('div', { class: 'dli' },
+          h('label', { class: 'check' }, tick, h('span', {}, h('b', {}, i.name), h('small', {}, `${i.version || 'not checked yet'}${i.date ? ' · ' + fmtDate(i.date) : ''}`))),
+          h('button', { type: 'button', class: 'linkbtn', onclick: () => (fixBox.hidden = !fixBox.hidden) }, 'Fix version'), fixBox);
+      }))));
+    }
+    const btn = h('button', { type: 'button', class: 'btn primary', onclick: async () => {
+      btn.disabled = true;
+      try {
+        const changed = {};
+        for (const [id, f] of Object.entries(fixes)) { const i = byId.get(id); if (f.version !== i.version || f.date !== (i.date || '').slice(0, 10) || f.url !== (i.url || '')) changed[id] = f; }
+        const r = await api('downloads', { method: 'PUT', body: { box: { show: show.checked, title: title.value, items: picks }, boxSha: sha, fixes: changed } });
+        sha = r.boxSha; dirty = false;
+        toast(r.fixed ? `Saved, and fixed ${r.fixed} version${r.fixed > 1 ? 's' : ''}. The site updates in about a minute.` : 'Saved. The site updates in about a minute.');
+      } catch (ex) { toast(ex.message, true); }
+      btn.disabled = false;
+    } }, 'Save');
+    drawOrder(); drawAll();
+    app.replaceChildren(h('div', { class: 'head' }, h('h1', {}, 'Downloads'), h('div', { class: 'acts' }, btn)),
+      h('div', { class: 'dlwrap', oninput: () => (dirty = true) },
+        h('div', { class: 'card' }, h('h2', {}, 'Sidebar box'),
+          h('p', { class: 'hint' }, 'The box in the right column of the homepage. Pick what goes in it and the order.'),
+          h('label', { class: 'check' }, show, 'Show it on the homepage'), h('label', { class: 'f' }, 'Box title', title), order),
+        h('div', { class: 'card' }, h('h2', {}, 'Everything we track'),
+          h('p', { class: 'hint' }, 'Versions update by themselves about every 15 minutes. If one is stuck or wrong, use Fix version. The next automatic check takes over again once something newer comes out.'),
+          all)));
+    dirty = false;
+  }
+
   /* ---------- routing ---------- */
   let lastHash = location.hash;
   async function route() {
     const parts = location.hash.replace(/^#\/?/, '').split('/').filter(Boolean);
-    document.querySelectorAll('[data-nav]').forEach((a) => a.classList.toggle('on', a.dataset.nav === (parts[0] === 'settings' ? 'settings' : 'list')));
+    document.querySelectorAll('[data-nav]').forEach((a) => a.classList.toggle('on', a.dataset.nav === (['settings', 'downloads'].includes(parts[0]) ? parts[0] : 'list')));
     try {
       if (parts[0] === 'new' && (parts[1] === 'article' || parts[1] === 'review')) await showEdit(parts[1]);
       else if (parts[0] === 'edit' && parts[2]) await showEdit(parts[1], decodeURIComponent(parts[2]));
       else if (parts[0] === 'settings') await showSettings();
+      else if (parts[0] === 'downloads') await showDownloads();
       else await showList();
       scrollTo(0, 0);
     } catch (ex) { if (!bar.hidden) app.replaceChildren(h('p', { class: 'warn', style: 'max-width:640px;margin:40px auto' }, ex.message)); }

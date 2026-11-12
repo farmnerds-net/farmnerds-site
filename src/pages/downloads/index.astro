@@ -1,0 +1,31 @@
+---
+import Base from '../../layouts/Base.astro';
+import { GROUPS, DOWNLOADS, dlDate, isNew } from '../../lib/downloads';
+const groups = GROUPS.map((g) => ({ g, items: DOWNLOADS.filter((d) => d.group === g) })).filter((x) => x.items.length);
+const desc = 'The newest GPU drivers, homelab software and bench tools, checked against each maker every 15 minutes.';
+---
+<Base title="Downloads" description={desc} section="downloads">
+  <div class="stack">
+    <div class="pagehead"><span class="chip">Downloads</span><h1>Downloads</h1>
+      <p>{desc} Every link goes straight to the maker's own download page, so you always get the real file.</p></div>
+    {groups.map(({ g, items }) => (
+      <section class="card dlgroup">
+        <div class="sh"><h2>{g}</h2><span class="trace"></span></div>
+        <div class="dltable">
+          {items.map((d) => (
+            <div class="dlrow" data-date={d.date}>
+              <div class="who"><b>{d.name}</b>{isNew(d) && <span class="new">New</span>}<small>{d.vendor} · {d.note}</small></div>
+              <div class="ver"><span>Version</span>{d.version || 'Checking…'}</div>
+              <div class="when"><span>Released</span>{d.date ? <time datetime={d.date}>{dlDate(d.date)}</time> : '—'}</div>
+              <div class="go">
+                {d.url && d.url !== d.page && <a class="btn ghost" href={d.url} target="_blank" rel="noopener">Notes</a>}
+                <a class="btn" href={d.page} target="_blank" rel="noopener">Get it ↗</a>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+    ))}
+    <p class="dlfoot">FarmNerds doesn't host any of these files. Versions are checked automatically, so a brand new release can take up to about half an hour to show here.</p>
+  </div>
+</Base>

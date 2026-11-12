@@ -12,6 +12,7 @@ const nav = [
   ['homelab', 'Homelab', '/homelab/', 'c-lab'],
   ['homestead', 'Homestead', '/homestead/', 'c-stead'],
   ['farmlabs', 'FarmLabs', '/farmlabs/', 'c-fl'],
+  ['downloads', 'Downloads', '/downloads/', ''],
   ['about', 'About', '/about/', ''],
   ['support', 'Support', '/support/', ''],
 ];
@@ -97,6 +98,12 @@ const nav = [
     const ro = new ResizeObserver((es) => es.forEach((e) => draw(e.target as HTMLCanvasElement)));
     arts.forEach((c) => ro.observe(c));
     matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => arts.forEach(draw));
+
+    // Pages are built ahead of time, so drop "New" tags on downloads older than a week.
+    document.querySelectorAll<HTMLElement>('[data-date]').forEach((el) => {
+      const d = Date.parse(el.dataset.date || '');
+      if (d && Date.now() - d >= 7 * 864e5) el.querySelectorAll('.new').forEach((n) => n.remove());
+    });
 
     // Light/dark switch. The choice is remembered on this device.
     const root = document.documentElement;
