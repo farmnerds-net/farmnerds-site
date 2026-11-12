@@ -83,6 +83,7 @@
       const inputs = schema.map((f) => {
         const val = simple ? item : item[f.key];
         if (f.type === 'list') { const r = repeater(f.fields, val || [], f.add); getters[f.key] = r.get; return h('div', {}, h('div', { class: 'muted', style: 'font-size:13px;margin-bottom:6px' }, f.label), r.el); }
+        if (f.type === 'select') { const sl = h('select', { 'aria-label': f.label }, f.options.map(([v, l]) => h('option', { value: v, selected: v === (val ?? f.options[0][0]) }, l))); getters[f.key] = () => sl.value; return sl; }
         if (f.type === 'check') { const c = h('input', { type: 'checkbox', checked: !!val }); getters[f.key] = () => c.checked; return h('label', { class: 'check', title: f.label }, c, f.short || f.label); }
         const i = h('input', { type: f.type === 'number' ? 'number' : 'text', step: 'any', placeholder: f.label, value: val ?? '', 'aria-label': f.label });
         getters[f.key] = () => (f.type === 'number' ? (i.value === '' ? null : Number(i.value)) : i.value.trim());
@@ -295,31 +296,167 @@ h('div', { class: 'col side' },
     if (isNew) title.focus();
   }
 
-  /* ---------- FarmLab box ---------- */
-  async function showSettings() {
+  /* ---------- Sidebar boxes ---------- */
+  const BOX_TYPES = {
+    stats: ['Stats', 'Numbers in tiles, plus progress bars. The FarmLab box is one of these.'],
+    posts: ['Posts', 'Latest reviews, one section, or featured posts. Fills itself in.'],
+    status: ['Status board', 'Services with a green, amber or red light. Handy for the homelab.'],
+    links: ['Links', 'A short list of links, on this site or anywhere.'],
+    spotlight: ['Spotlight', 'A picture card with a heading. Uses circuit art when there is no photo.'],
+    text: ['Text', 'A short note, with the logo and a button if you want them.'],
+    downloads: ['Downloads', 'The latest downloads box. What is in it is picked on the Downloads screen.'],
+  };
+  const BOX_COLORS = [['', 'Green'], ['tech', 'Tech blue'], ['stead', 'Homestead olive'], ['fl', 'FarmLabs orange']];
+  const BOX_SOURCES = [['reviews', 'Latest reviews'], ['all', 'Latest posts, everything'], ['featured', 'Featured posts'], ...Object.entries(SECTIONS).map(([k, v]) => [k, 'Latest in ' + v])];
+  const STATES = [['up', 'Up (green)'], ['warn', 'Degraded (amber)'], ['down', 'Down (red)']];
+  const NEW_BOX = {
+    stats: () => ({ title: 'New stats', tiles: [{ label: 'Nodes', value: '' }, { label: 'Guests', value: '' }], meters: [], note: '' }),
+    posts: () => ({ title: 'Latest homelab', source: 'homelab', count: 4, style: 'thumbs' }),
+    status: () => ({ title: 'FarmLab status', items: [{ label: 'Plex', state: 'up', note: '' }, { label: 'Home Assistant', state: 'up', note: '' }], note: '' }),
+    links: () => ({ title: 'Links', items: [{ label: 'Support the server', url: '/support/', note: 'Keep the Plex box running' }] }),
+    spotlight: () => ({ title: '', chip: 'FarmLabs', heading: 'What is on the bench', text: '', url: '', image: '' }),
+    text: () => ({ title: 'A note', lead: '', text: '', logo: false, button: { label: '', url: '' } }),
+    downloads: () => ({ title: '' }),
+  };
+  const okLink = (s) => !s || /^(https?:\/\/[^\s"<>]+|\/(?!\/)[^\s"<>]*)$/.test(s);
+  const sel = (opts, val, on) => h('select', { onchange: (e) => on(e.target.value) }, opts.map(([v, l]) => h('option', { value: v, selected: v === (val ?? '') }, l)));
+
+  async function showSidebar() {
     app.replaceChildren(h('p', { class: 'muted center' }, 'Loading…'));
-    const { data, sha } = await api('settings');
-    const f = {
-      show: h('input', { type: 'checkbox', checked: !!data.show }),
-      nodes: h('input', { type: 'text', value: data.nodes ?? '' }), guests: h('input', { type: 'text', value: data.guests ?? '' }),
-      power: h('input', { type: 'text', value: data.power ?? '' }), uptime: h('input', { type: 'text', value: data.uptime ?? '' }),
-      storageUsed: h('input', { type: 'number', step: 'any', value: data.storageUsed ?? 0 }), storageTotal: h('input', { type: 'number', step: 'any', value: data.storageTotal ?? 0 }),
-    };
+    const { data, sha } = await api('sidebar');
     let cur = sha;
-    const F = (label, input) => h('label', { class: 'f' }, label, input);
+    let boxes = (data.boxes || []).map((b) => ({ ...b }));
+    const open = new Set();
+    const listEl = h('div', { class: 'bxlist' });
+    const addEl = h('div', { class: 'bxadd' });
+    let readers = [];
+    const sync = () => readers.forEach((r) => r());
+    const redraw = () => { sync(); draw(); };
+    const F = (label, input, hint) => h('label', { class: 'f' }, label, input, hint && h('small', {}, hint));
+    const txt = (b, key, attrs = {}) => h('input', { type: 'text', value: b[key] ?? '', ...attrs, oninput: (e) => (b[key] = e.target.value) });
+
+    function fields(b) {
+      const out = [];
+      if (b.type === 'downloads') {
+        out.push(h('p', { class: 'hint', style: 'margin:0' }, 'The title and the downloads in this box are picked on the ', h('a', { href: '#/downloads' }, 'Downloads screen'), '.'));
+        return out;
+      }
+      out.push(h('div', { class: 'two' },
+        F(b.type === 'spotlight' ? 'Name (only shown in the editor)' : 'Box title', txt(b, 'title', { maxLength: 60, placeholder: b.type === 'text' ? 'Optional' : '' })),
+        F('Color', sel(BOX_COLORS, b.color, (v) => { b.color = v; dirty = true; }))));
+      if (b.type === 'stats') {
+        const tiles = repeater([{ key: 'label', label: 'Label, like Nodes' }, { key: 'value', label: 'Value, like 3' }], b.tiles, 'Add tile');
+        const meters = repeater([{ key: 'label', label: 'Bar label, like Storage' }, { key: 'used', label: 'Used', type: 'number', width: '90px' }, { key: 'total', label: 'Total', type: 'number', width: '90px' }, { key: 'unit', label: 'Unit', width: '80px' }], b.meters, 'Add progress bar');
+        readers.push(() => { b.tiles = tiles.get(); b.meters = meters.get(); });
+        out.push(F('Tiles', tiles.el, 'Shown two to a row. Up to 8.'), F('Progress bars', meters.el, 'Fills to Used out of Total, like 38 of 64 TB.'),
+          F('Small note under the box', txt(b, 'note', { maxLength: 80, placeholder: 'Optional, like Updated Nov 12' })));
+      }
+      if (b.type === 'posts') {
+        out.push(F('What to show', sel(BOX_SOURCES, b.source, (v) => { b.source = v; dirty = true; })),
+          h('div', { class: 'two' },
+            F('How many', h('input', { type: 'number', min: 1, max: 10, value: b.count ?? 5, oninput: (e) => (b.count = Number(e.target.value)) })),
+            F('Look', sel([['list', 'Plain list (reviews show scores)'], ['thumbs', 'With pictures']], b.style, (v) => { b.style = v; dirty = true; }))));
+      }
+      if (b.type === 'status') {
+        const items = repeater([{ key: 'label', label: 'Service, like Plex' }, { key: 'state', label: 'Light', type: 'select', options: STATES, width: '170px' }, { key: 'note', label: 'Note (optional)', width: '150px' }], b.items, 'Add service');
+        readers.push(() => { b.items = items.get(); });
+        out.push(F('Services', items.el, 'With no note, the box says Up, Degraded or Down.'), F('Small note under the box', txt(b, 'note', { maxLength: 80, placeholder: 'Optional, like Checked Nov 12' })));
+      }
+      if (b.type === 'links') {
+        const items = repeater([{ key: 'label', label: 'Link text' }, { key: 'url', label: 'https://… or /support/' }, { key: 'note', label: 'Small note (optional)' }], b.items, 'Add link');
+        readers.push(() => { b.items = items.get(); });
+        out.push(F('Links', items.el));
+      }
+      if (b.type === 'spotlight') {
+        const pic = h('div', { class: 'cover bxpic' });
+        const drawPic = () => pic.replaceChildren(b.image ? h('img', { src: toEditorUrls(b.image), alt: '' }) : h('span', {}, 'No photo. Circuit art will be used.'));
+        const file = h('input', { type: 'file', accept: 'image/*', hidden: true, onchange: async () => {
+          const f = file.files[0]; if (!f) return;
+          toast('Uploading photo…');
+          try { b.image = await upload(f); dirty = true; redraw(); toast('Photo added. Save to put it on the site.'); } catch (ex) { toast(ex.message, true); }
+          file.value = '';
+        } });
+        drawPic();
+        out.push(h('div', { class: 'two' }, F('Small tag', txt(b, 'chip', { maxLength: 30, placeholder: 'FarmLabs' })), F('Link (optional)', txt(b, 'url', { placeholder: 'https://… or /farmlabs/' }))),
+          F('Heading', txt(b, 'heading', { maxLength: 90 })),
+          F('Text (optional)', h('textarea', { rows: 2, maxLength: 240, value: b.text || '', oninput: (e) => (b.text = e.target.value) })),
+          h('div', { class: 'f' }, h('span', { class: 'muted', style: 'font:600 12px var(--body);letter-spacing:.04em;text-transform:uppercase' }, 'Photo'), pic,
+            h('div', { class: 'rowbtns' }, file, h('button', { type: 'button', class: 'btn small', onclick: () => file.click() }, b.image ? 'Change photo' : 'Add photo'),
+              b.image && h('button', { type: 'button', class: 'btn small danger', onclick: () => { b.image = ''; dirty = true; redraw(); } }, 'Use circuit art'))));
+      }
+      if (b.type === 'text') {
+        b.button ||= { label: '', url: '' };
+        out.push(F('Bold opening line (optional)', txt(b, 'lead', { maxLength: 120 })),
+          F('Text', h('textarea', { rows: 3, maxLength: 500, value: b.text || '', oninput: (e) => (b.text = e.target.value) })),
+          h('label', { class: 'check' }, h('input', { type: 'checkbox', checked: !!b.logo, onchange: (e) => { b.logo = e.target.checked; dirty = true; } }), 'Show the logo'),
+          h('div', { class: 'two' },
+            F('Button text (optional)', h('input', { type: 'text', maxLength: 40, value: b.button.label, oninput: (e) => (b.button.label = e.target.value) })),
+            F('Button link', h('input', { type: 'text', value: b.button.url, placeholder: 'https://… or /support/', oninput: (e) => (b.button.url = e.target.value) }))));
+      }
+      return out;
+    }
+
+    function name(b) {
+      if (b.type === 'downloads') return 'Downloads';
+      return b.title || b.heading || b.lead || BOX_TYPES[b.type][0];
+    }
+
+    function draw() {
+      readers = [];
+      listEl.replaceChildren(...(boxes.length ? boxes.map((b, i) => {
+        const isOpen = open.has(b);
+        const body = h('div', { class: 'bx-body', hidden: !isOpen }, fields(b));
+        const move = (d) => { sync(); [boxes[i + d], boxes[i]] = [boxes[i], boxes[i + d]]; dirty = true; draw(); };
+        return h('div', { class: 'bx' + (b.show === false ? ' off' : '') },
+          h('div', { class: 'bx-head' },
+            h('span', { class: 'num' }, String(i + 1)),
+            h('button', { type: 'button', class: 'bx-name', 'aria-expanded': String(isOpen), onclick: () => { sync(); isOpen ? open.delete(b) : open.add(b); draw(); } },
+              h('b', {}, name(b)), h('small', {}, BOX_TYPES[b.type]?.[0] || b.type), h('span', { class: 'chev' }, isOpen ? '▴' : '▾')),
+            h('label', { class: 'check', title: 'Show it on the homepage' }, h('input', { type: 'checkbox', checked: b.show !== false, onchange: (e) => { b.show = e.target.checked; dirty = true; e.target.closest('.bx').classList.toggle('off', !b.show); } }), h('span', { class: 'hide-s' }, 'Show')),
+            h('button', { type: 'button', class: 'btn small', disabled: i === 0, title: 'Move up', 'aria-label': 'Move up', onclick: () => move(-1) }, '↑'),
+            h('button', { type: 'button', class: 'btn small', disabled: i === boxes.length - 1, title: 'Move down', 'aria-label': 'Move down', onclick: () => move(1) }, '↓'),
+            h('button', { type: 'button', class: 'btn small danger', title: 'Remove box', 'aria-label': 'Remove box', onclick: () => {
+              if (!confirm(`Remove the "${name(b)}" box? You can untick Show instead to hide it for now.`)) return;
+              sync(); boxes = boxes.filter((x) => x !== b); dirty = true; draw();
+            } }, '✕')),
+          body);
+      }) : [h('p', { class: 'hint', style: 'margin:0' }, 'No boxes. Add one from the list.')]));
+      const hasDl = boxes.some((b) => b.type === 'downloads');
+      addEl.replaceChildren(...Object.entries(BOX_TYPES).map(([type, [label, about]]) => {
+        const taken = type === 'downloads' && hasDl;
+        return h('button', { type: 'button', class: 'bxtype', disabled: taken, onclick: () => {
+          sync();
+          const b = { id: '', type, show: true, color: '', ...NEW_BOX[type]() };
+          boxes.push(b); open.add(b); dirty = true; draw();
+          listEl.lastChild.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          listEl.lastChild.querySelector('input[type=text]')?.focus({ preventScroll: true });
+        } }, h('b', {}, '+ ' + label), h('small', {}, taken ? 'Already in the sidebar. There can be one.' : about));
+      }));
+    }
+
     const btn = h('button', { type: 'button', class: 'btn primary', onclick: async () => {
+      sync();
+      const bad = boxes.flatMap((b) => [b.url, b.button?.url, ...(b.items || []).map((l) => l.url)]).filter((u) => u && !okLink(u.trim()));
+      if (bad.length) return toast(`This link won't work: ${bad[0]}. Links start with https:// or with / for a page on this site.`, true);
       btn.disabled = true;
-      try { const out = {}; for (const k in f) out[k] = f[k].type === 'checkbox' ? f[k].checked : f[k].value;
-        cur = (await api('settings', { method: 'PUT', body: { data: out, sha: cur } })).sha; dirty = false; toast('Saved. The homepage updates in about a minute.'); }
-      catch (ex) { toast(ex.message, true); }
+      try {
+        const r = await api('sidebar', { method: 'PUT', body: { data: { boxes }, sha: cur } });
+        cur = r.sha; dirty = false;
+        const keep = [...open].map((b) => boxes.indexOf(b));
+        boxes = r.data.boxes; open.clear(); keep.forEach((k) => boxes[k] && open.add(boxes[k]));
+        draw();
+        toast('Saved. The homepage updates in about a minute.');
+      } catch (ex) { toast(ex.message, true); }
       btn.disabled = false;
     } }, 'Save');
-    app.replaceChildren(h('div', { class: 'head' }, h('h1', {}, 'FarmLab box')),
-      h('div', { class: 'card', style: 'max-width:560px', oninput: () => (dirty = true) },
-        h('p', { class: 'hint', style: 'margin:0' }, 'The stats box in the right column of the homepage.'),
-        h('label', { class: 'check' }, f.show, 'Show it on the homepage'),
-        h('div', { class: 'two' }, F('Nodes', f.nodes), F('Guests', f.guests)), h('div', { class: 'two' }, F('Power draw', f.power), F('Uptime', f.uptime)),
-        h('div', { class: 'two' }, F('Storage used (TB)', f.storageUsed), F('Storage total (TB)', f.storageTotal)), h('div', {}, btn)));
+
+    draw();
+    app.replaceChildren(h('div', { class: 'head' }, h('h1', {}, 'Sidebar boxes'),
+      h('div', { class: 'acts' }, h('a', { class: 'btn', href: '/', target: '_blank', rel: 'noopener' }, 'View site ↗'), btn)),
+      h('p', { class: 'muted', style: 'margin:-6px 0 16px' }, 'The boxes in the right column of the homepage, top to bottom. Tap a box to change what it shows.'),
+      h('div', { class: 'bxwrap', oninput: () => (dirty = true) },
+        listEl,
+        h('div', { class: 'card side' }, h('h2', {}, 'Add a box'), addEl)));
     dirty = false;
   }
 
@@ -331,7 +468,6 @@ h('div', { class: 'col side' },
     const byId = new Map(items.map((i) => [i.id, i]));
     let picks = (box.items || []).filter((id) => byId.has(id));
     let sha = boxSha;
-    const show = h('input', { type: 'checkbox', checked: box.show !== false });
     const title = h('input', { type: 'text', value: box.title || 'Latest downloads', maxLength: 60 });
     const order = h('div', { class: 'dlorder' });
     const all = h('div', { class: 'dlpick' });
@@ -366,7 +502,7 @@ h('div', { class: 'col side' },
       try {
         const changed = {};
         for (const [id, f] of Object.entries(fixes)) { const i = byId.get(id); if (f.version !== i.version || f.date !== (i.date || '').slice(0, 10) || f.url !== (i.url || '') || f.file !== (i.file || '') || f.fileLabel !== (i.fileLabel || '')) changed[id] = f; }
-        const r = await api('downloads', { method: 'PUT', body: { box: { show: show.checked, title: title.value, items: picks }, boxSha: sha, fixes: changed } });
+        const r = await api('downloads', { method: 'PUT', body: { box: { show: true, title: title.value, items: picks }, boxSha: sha, fixes: changed } });
         sha = r.boxSha; dirty = false;
         toast(r.fixed ? `Saved, and fixed ${r.fixed} version${r.fixed > 1 ? 's' : ''}. The site updates in about a minute.` : 'Saved. The site updates in about a minute.');
       } catch (ex) { toast(ex.message, true); }
@@ -377,7 +513,8 @@ h('div', { class: 'col side' },
       h('div', { class: 'dlwrap', oninput: () => (dirty = true) },
         h('div', { class: 'card' }, h('h2', {}, 'Sidebar box'),
           h('p', { class: 'hint' }, 'The box in the right column of the homepage. Pick what goes in it and the order.'),
-          h('label', { class: 'check' }, show, 'Show it on the homepage'), h('label', { class: 'f' }, 'Box title', title), order),
+          h('p', { class: 'hint', style: 'margin:0' }, 'To hide it or move it up and down, use the ', h('a', { href: '#/sidebar' }, 'Sidebar screen'), '.'),
+          h('label', { class: 'f' }, 'Box title', title), order),
         h('div', { class: 'card' }, h('h2', {}, 'Everything we track'),
           h('p', { class: 'hint' }, 'Versions update by themselves about every 15 minutes. If one is stuck or wrong, use Fix version. The next automatic check takes over again once something newer comes out.'),
           all)));
@@ -448,11 +585,11 @@ h('div', { class: 'col side' },
   let lastHash = location.hash;
   async function route() {
     const parts = location.hash.replace(/^#\/?/, '').split('/').filter(Boolean);
-    document.querySelectorAll('[data-nav]').forEach((a) => a.classList.toggle('on', a.dataset.nav === (['settings', 'downloads', 'pages'].includes(parts[0]) ? parts[0] : 'list')));
+    document.querySelectorAll('[data-nav]').forEach((a) => a.classList.toggle('on', a.dataset.nav === (['sidebar', 'downloads', 'pages'].includes(parts[0]) ? parts[0] : parts[0] === 'settings' ? 'sidebar' : 'list')));
     try {
       if (parts[0] === 'new' && (parts[1] === 'article' || parts[1] === 'review')) await showEdit(parts[1]);
       else if (parts[0] === 'edit' && parts[2]) await showEdit(parts[1], decodeURIComponent(parts[2]));
-      else if (parts[0] === 'settings') await showSettings();
+      else if (parts[0] === 'sidebar' || parts[0] === 'settings') await showSidebar();
       else if (parts[0] === 'downloads') await showDownloads();
       else if (parts[0] === 'pages') await (parts[1] ? showPage(decodeURIComponent(parts[1])) : showPages());
       else await showList();

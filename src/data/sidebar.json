@@ -1,0 +1,140 @@
+{
+  "boxes": [
+    {
+      "id": "reviews",
+      "type": "posts",
+      "show": true,
+      "title": "Reviews",
+      "color": "fl",
+      "source": "reviews",
+      "count": 5,
+      "style": "list"
+    },
+    {
+      "id": "downloads",
+      "type": "downloads",
+      "show": true,
+      "title": "",
+      "color": ""
+    },
+    {
+      "id": "farmlab",
+      "type": "stats",
+      "show": true,
+      "title": "The FarmLab",
+      "color": "",
+      "tiles": [
+        {
+          "label": "Nodes",
+          "value": "3"
+        },
+        {
+          "label": "Guests",
+          "value": "14"
+        },
+        {
+          "label": "Power draw",
+          "value": "187 W"
+        },
+        {
+          "label": "Uptime",
+          "value": "212 d"
+        }
+      ],
+      "meters": [
+        {
+          "label": "Storage",
+          "used": 38,
+          "total": 64,
+          "unit": "TB"
+        }
+      ],
+      "note": ""
+    },
+    {
+      "id": "farmlab-status",
+      "type": "status",
+      "show": false,
+      "title": "FarmLab status",
+      "color": "",
+      "items": [
+        {
+          "label": "Plex",
+          "state": "up",
+          "note": ""
+        },
+        {
+          "label": "Home Assistant",
+          "state": "up",
+          "note": ""
+        },
+        {
+          "label": "TrueNAS",
+          "state": "warn",
+          "note": "Scrub running"
+        },
+        {
+          "label": "Backup node",
+          "state": "down",
+          "note": ""
+        }
+      ],
+      "note": ""
+    },
+    {
+      "id": "spotlight",
+      "type": "spotlight",
+      "show": false,
+      "title": "",
+      "color": "fl",
+      "chip": "FarmLabs",
+      "heading": "Solar-powered chicken coop door, build log",
+      "text": "An ESP32, a linear actuator and way too much hot glue.",
+      "url": "/farmlabs/",
+      "image": ""
+    },
+    {
+      "id": "latest-homelab",
+      "type": "posts",
+      "show": false,
+      "title": "Latest homelab",
+      "color": "",
+      "source": "homelab",
+      "count": 3,
+      "style": "thumbs"
+    },
+    {
+      "id": "links",
+      "type": "links",
+      "show": false,
+      "title": "Links",
+      "color": "tech",
+      "items": [
+        {
+          "label": "Support the server",
+          "url": "/support/",
+          "note": "Keep the Plex box running"
+        },
+        {
+          "label": "Proxmox recipes",
+          "url": "https://github.com/farmnerds-net/proxmox-recipes",
+          "note": "github.com"
+        }
+      ]
+    },
+    {
+      "id": "about",
+      "type": "text",
+      "show": true,
+      "title": "",
+      "color": "",
+      "lead": "Powered by brisket, bandwidth, and bad ideas.",
+      "text": "Tech, homelab and homestead notes from Stephenville, Texas.",
+      "logo": true,
+      "button": {
+        "label": "",
+        "url": ""
+      }
+    }
+  ]
+}

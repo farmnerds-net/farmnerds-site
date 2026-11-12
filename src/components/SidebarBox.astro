@@ -1,0 +1,75 @@
+---
+// One box in the homepage's right column. What goes in each is set on the Sidebar screen in /admin (src/data/sidebar.json).
+import ReviewList from './ReviewList.astro';
+import DownloadsBox from './DownloadsBox.astro';
+import Thumb from './Thumb.astro';
+import { CATS, fmtShort, seed, type Post } from '../lib/posts';
+interface Props { box: any; posts: Post[] }
+const { box, posts } = Astro.props;
+const cls = box.color ? `c-${box.color}` : '';
+const ext = (u: string) => /^https?:/.test(u) ? { target: '_blank', rel: 'noopener' } : {};
+
+let list: Post[] = [];
+let all = '';
+if (box.type === 'posts') {
+  const s = box.source;
+  list = s === 'reviews' ? posts.filter((p) => p.type === 'review')
+    : s === 'featured' ? posts.filter((p) => p.data.featured)
+    : s in CATS ? posts.filter((p) => p.data.category === s)
+    : posts;
+  list = list.slice(0, box.count || 5);
+  all = s === 'reviews' ? '/reviews/' : s in CATS ? `/${s}/` : '';
+}
+const STATE = { up: 'Up', warn: 'Degraded', down: 'Down' } as Record<string, string>;
+const pct = (m: any) => Math.max(0, Math.min(100, Math.round((m.used / (m.total || 1)) * 100)));
+const head = box.title || (box.type === 'status' ? 'Status' : '');
+---
+{box.type === 'downloads' ? <DownloadsBox /> : box.type === 'text' ? (
+  <div class:list={['card', 'about', 'sb-text', cls]}>
+    {box.logo && <span class="logo-mark"></span>}
+    <div>
+      {box.title && <div class="sh"><h2>{box.title}</h2><span class="trace"></span></div>}
+      <p>{box.lead && <b style="color:var(--fg)">{box.lead}</b>} {box.text}</p>
+      {box.button?.label && box.button?.url && <a class="sb-btn" href={box.button.url} {...ext(box.button.url)}>{box.button.label} →</a>}
+    </div>
+  </div>
+) : box.type === 'spotlight' ? (
+  <a class:list={['sb-spot', cls]} href={box.url || undefined} {...ext(box.url || '')}>
+    {box.image ? <img src={box.image} alt="" loading="lazy" /> : <canvas class="art" data-seed={seed(box.id)} data-n="14"></canvas>}
+    <div class="txt">
+      {(box.chip || box.title) && <span class="chip">{box.chip || box.title}</span>}
+      {box.heading && <h3>{box.heading}</h3>}
+      {box.text && <p>{box.text}</p>}
+    </div>
+  </a>
+) : (
+  <div class:list={['card', `box-${box.type}`, cls]}>
+    {head && <div class="sh"><h2>{head}</h2><span class="trace"></span>{all && <a href={all}>All</a>}</div>}
+
+    {box.type === 'stats' && <>
+      {box.tiles?.length > 0 && <div class="lab-grid">{box.tiles.map((t: any) => <div><b>{t.value}</b><span>{t.label}</span></div>)}</div>}
+      {box.meters?.map((m: any) => <div class="meter"><span>{m.label} · {m.used} of {m.total}{m.unit && ` ${m.unit}`}</span><i style={`--v:${pct(m)}%`}></i></div>)}
+      {box.note && <p class="sb-note">{box.note}</p>}
+    </>}
+
+    {box.type === 'posts' && (box.source === 'reviews' && box.style !== 'thumbs'
+      ? <ReviewList reviews={list} />
+      : box.style === 'thumbs'
+        ? <div class="sb-thumbs">{list.map((p) => (
+            <a class:list={['sb-th', CATS[p.data.category as keyof typeof CATS].cls]} href={p.url}>
+              <div class="ph"><Thumb post={p} n={6} /></div>
+              <div><span class="t">{p.data.title}</span><time>{fmtShort(p.data.date)}{p.type === 'review' && ` · ${p.data.score.toFixed(1)}`}</time></div>
+            </a>))}</div>
+        : <ul class="mini">{list.map((p) => <li><a href={p.url}>{p.data.title}</a><time>{fmtShort(p.data.date)}</time></li>)}</ul>)}
+    {box.type === 'posts' && list.length === 0 && !(box.source === 'reviews' && box.style !== 'thumbs') && <p class="empty" style="border:0;padding:0">Nothing here yet.</p>}
+
+    {box.type === 'status' && <>
+      <ul class="sb-status">{box.items?.map((s: any) => (
+        <li class={`st-${s.state}`}><span class="dot" title={STATE[s.state]}><span class="sr">{STATE[s.state]}: </span></span><b>{s.label}</b><span class="nt">{s.note || STATE[s.state]}</span></li>))}</ul>
+      {box.note && <p class="sb-note">{box.note}</p>}
+    </>}
+
+    {box.type === 'links' && <ul class="sb-links">{box.items?.map((l: any) => (
+      <li><a href={l.url} {...ext(l.url)}><b>{l.label}</b>{l.note && <span>{l.note}</span>}</a></li>))}</ul>}
+  </div>
+)}

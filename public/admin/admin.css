@@ -135,3 +135,27 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent);outline:0}
 .dlfix{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:10px;background:var(--surface2);border-radius:10px;padding:12px}
 .dlfix label:nth-child(n+3){grid-column:1/-1}
 .dlfix[hidden]{display:none}
+
+/* sidebar boxes screen */
+.bxwrap{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:22px;align-items:start}
+@media (max-width:900px){.bxwrap{grid-template-columns:minmax(0,1fr)}}
+.bxlist{display:flex;flex-direction:column;gap:10px;min-width:0}
+.bx{background:var(--surface);border:1px solid var(--line);border-radius:14px;min-width:0}
+.bx.off .bx-name b,.bx.off .num{opacity:.5}
+.bx-head{display:grid;grid-template-columns:26px minmax(0,1fr) auto auto auto auto;gap:8px;align-items:center;padding:10px 12px}
+.bx-head .num{font:700 13px var(--mono);color:var(--accent);text-align:center}
+.bx-name{display:flex;align-items:baseline;gap:10px;min-width:0;background:none;border:0;color:var(--fg);cursor:pointer;text-align:left;padding:6px 0;font:inherit}
+.bx-name b{font:600 16px var(--display);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bx-name small{font:500 11px var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:.06em;white-space:nowrap}
+.bx-name .chev{margin-left:auto;color:var(--muted)}
+.bx-name:hover b{color:var(--accent)}
+.bx-body{border-top:1px solid var(--line);padding:14px 16px 16px;display:flex;flex-direction:column;gap:14px}
+.bx-body .hint{font-size:13px;color:var(--muted)}
+.bxpic{aspect-ratio:16/8;max-width:360px}
+.bxadd{display:flex;flex-direction:column;gap:8px}
+.bxtype{display:flex;flex-direction:column;gap:3px;text-align:left;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;color:var(--fg);cursor:pointer;font:inherit}
+.bxtype b{font:600 14px var(--display);letter-spacing:.03em;color:var(--accent)}
+.bxtype small{font-size:12.5px;color:var(--muted);line-height:1.4}
+.bxtype:hover:not(:disabled){border-color:var(--accent)}
+.bxtype:disabled{opacity:.55;cursor:default}
+@media (max-width:560px){.bx-head{grid-template-columns:22px minmax(0,1fr) auto auto auto auto;gap:6px;padding:8px}.bx-head .hide-s{display:none}.bx-name small{display:none}}

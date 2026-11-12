@@ -21,7 +21,7 @@ In the write-up, every *Heading 2* starts a new page of the review. If a scored 
 
 ### Before launch
 
-The posts whose web addresses start with `sample-` are placeholders with made-up content. Delete them in the editor once real posts exist. The numbers in the FarmLab box on the homepage are also placeholders. Change or hide them under **FarmLab box**.
+The posts whose web addresses start with `sample-` are placeholders with made-up content. Delete them in the editor once real posts exist. The numbers in the FarmLab box on the homepage are also placeholders. Change or hide them under **Sidebar**, where you can also add, remove and reorder the homepage side boxes.
 
 ### Downloads
 
@@ -38,7 +38,7 @@ GitHub pauses scheduled jobs in a repo that has had no activity for 60 days. The
 | Articles | `src/content/articles/` |
 | Reviews | `src/content/reviews/` |
 | Uploaded photos | `public/uploads/` |
-| FarmLab stats box | `src/data/farmlab.json` |
+| Homepage sidebar boxes (order, type, contents) | `src/data/sidebar.json` |
 | Downloads list (updated automatically) | `src/data/downloads.json` |
 | Downloads sidebar box picks | `src/data/downloads-box.json` |
 | What the Downloads page tracks, and how each is checked | `scripts/downloads/sources.mjs` |
