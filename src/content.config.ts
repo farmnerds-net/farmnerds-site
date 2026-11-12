@@ -25,7 +25,7 @@ const reviews = defineCollection({
   schema: z.object({
     ...base,
     kind: z.string().default('Equipment'),
-    score: z.coerce.number().min(0).max(10),
+    score: z.coerce.number().min(0).max(10).nullish(),
     approved: z.boolean().default(false),
     verdict: z.string().default(''),
     tested: z.string().nullish(),
@@ -34,7 +34,7 @@ const reviews = defineCollection({
     specs: z.array(pair).nullish(),
     pros: z.array(z.string()).nullish(),
     cons: z.array(z.string()).nullish(),
-    breakdown: z.array(z.object({ label: z.string(), score: z.coerce.number().min(0).max(10) })).nullish(),
+    breakdown: z.array(z.object({ label: z.string(), score: z.coerce.number().min(0).max(10), weight: z.coerce.number().positive().nullish() })).nullish(),
     charts: z.array(z.object({
       title: z.string(),
       note: z.string().nullish(),

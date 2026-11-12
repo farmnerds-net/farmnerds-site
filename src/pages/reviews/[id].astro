@@ -2,13 +2,16 @@
 import Base from '../../layouts/Base.astro';
 import { getCollection, render } from 'astro:content';
 import { CATS, fmtDate, readTime, seed } from '../../lib/posts';
+import { ourScore } from '../../lib/score.js';
 
 export async function getStaticPaths() {
   const posts = await getCollection('reviews', (e) => import.meta.env.DEV || !e.data.draft);
   return posts.map((post) => ({ params: { id: post.id }, props: { post } }));
 }
 const { post } = Astro.props;
-const d = post.data;
+const d = { ...post.data, score: ourScore(post.data) ?? 0 };
+const parts = d.breakdown || [];
+const weighted = parts.some((p) => p.weight && p.weight !== 1);
 const { Content } = await render(post);
 const cat = CATS[d.category];
 const C = 2 * Math.PI * 42;
@@ -35,7 +38,7 @@ const ld = {
         <div class="sum-top">
           <div class="ring" role="img" aria-label={`Score ${d.score.toFixed(1)} out of 10`}>
             <svg width="96" height="96" viewBox="0 0 96 96" aria-hidden="true"><circle cx="48" cy="48" r="42" fill="none" stroke="var(--surface2)" stroke-width="7"/><circle cx="48" cy="48" r="42" fill="none" stroke="var(--ember)" stroke-width="7" stroke-linecap="round" stroke-dasharray={dash}/></svg>
-            <b>{d.score.toFixed(1)}</b></div>
+            <b>{d.score.toFixed(1)}</b><span>Our score</span></div>
           <div>{d.approved && <span class="award"><span class="logo-mark"></span>FarmNerds Approved</span>}{d.verdict && <h2>{d.verdict}</h2>}</div>
         </div>
         {d.facts?.length && <dl class="kv">{d.facts.map((f) => <><dt>{f.label}</dt><dd>{f.value}</dd></>)}</dl>}
@@ -46,7 +49,7 @@ const ld = {
 
     <nav class="steps" aria-label="Review pages"></nav>
 
-    <div id="review-body" class="stack" style="gap:22px">
+    <div id="review-body" class="stack" style="gap:22px" data-scores={JSON.stringify(Object.fromEntries(parts.map((p) => [p.label.trim().toLowerCase(), p.score.toFixed(1)])))}>
       <section class="rp" data-title="Introduction" data-md><div class="md"><Content /></div></section>
 
       {d.specs?.length && (
@@ -71,8 +74,9 @@ const ld = {
             {d.cons?.length && <div class="card n"><h3>Cons</h3><ul>{d.cons.map((p) => <li>{p}</li>)}</ul></div>}
           </div>
           {d.breakdown?.length && (
-            <div class="chart"><h3>Score breakdown</h3><p class="sub">Out of 10</p>
-              {d.breakdown.map((b) => <div class="row me"><span>{b.label}</span><i style={`--v:${b.score * 10}%`}></i><b>{b.score.toFixed(1)}</b></div>)}
+            <div class="chart"><h3>How we scored it</h3><p class="sub">Each part is scored out of 10. Our score is the {weighted ? 'weighted average' : 'average'} of {parts.length === 1 ? 'this part' : `these ${parts.length} parts`}.</p>
+              {d.breakdown.map((b) => <div class="row me"><span>{b.label}{b.weight && b.weight !== 1 ? ` (×${b.weight})` : ''}</span><i style={`--v:${b.score * 10}%`}></i><b>{b.score.toFixed(1)}</b></div>)}
+              <div class="row total"><span>Our score</span><i style={`--v:${d.score * 10}%`}></i><b>{d.score.toFixed(1)}</b></div>
             </div>
           )}
         </section>
@@ -103,6 +107,14 @@ const ld = {
     mdSec.replaceWith(...made);
 
     const pages = [...body.querySelectorAll<HTMLElement>('.rp')];
+    // A page whose name matches a scored part shows that part's score beside its heading.
+    const scores: Record<string, string> = JSON.parse(body.dataset.scores || '{}');
+    for (const p of pages) {
+      const s = scores[(p.dataset.title || '').trim().toLowerCase()];
+      if (!s) continue;
+      const chip = document.createElement('span'); chip.className = 'sc part'; chip.textContent = s; chip.title = 'Score for this part, out of 10';
+      p.querySelector('h2')?.append(chip); p.dataset.score = s;
+    }
     const steps = document.querySelector('.steps')!, pn = document.querySelector<HTMLElement>('.pn')!;
     const prev = document.getElementById('prev') as HTMLButtonElement, next = document.getElementById('next') as HTMLButtonElement;
     if (pages.length > 1) {
@@ -110,7 +122,8 @@ const ld = {
       const tabs = pages.map((p, k) => {
         const b = document.createElement('button'); b.type = 'button';
         const n = document.createElement('span'); n.textContent = String(k + 1).padStart(2, '0');
-        b.append(n, p.dataset.title || ''); b.addEventListener('click', () => go(k)); steps.append(b); return b;
+        b.append(n, p.dataset.title || '');
+        if (p.dataset.score) { const s = document.createElement('em'); s.textContent = p.dataset.score; b.append(s); } b.addEventListener('click', () => go(k)); steps.append(b); return b;
       });
       function go(i: number, scroll = false) {
         at = Math.max(0, Math.min(pages.length - 1, i));
