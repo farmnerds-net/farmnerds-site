@@ -62,7 +62,7 @@ const nav = [
       const w = c.clientWidth, h = c.clientHeight; if (!w || !h) return;
       const d = Math.min(devicePixelRatio || 1, 2); c.width = w * d; c.height = h * d;
       const x = c.getContext('2d')!; x.scale(d, d);
-      const cs = getComputedStyle(c), col = cs.getPropertyValue('--c').trim() || cs.getPropertyValue('--teal').trim(), bg = cs.getPropertyValue('--art-bg').trim();
+      const cs = getComputedStyle(c), col = cs.getPropertyValue('--c').trim() || cs.getPropertyValue('--accent').trim(), bg = cs.getPropertyValue('--art-bg').trim();
       x.fillStyle = bg; x.fillRect(0, 0, w, h);
       const g = x.createRadialGradient(w * 0.5, 0, 0, w * 0.5, 0, Math.max(w, h) * 0.9); g.addColorStop(0, col); g.addColorStop(1, 'transparent');
       x.globalAlpha = 0.22; x.fillStyle = g; x.fillRect(0, 0, w, h);
