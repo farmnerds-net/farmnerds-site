@@ -4,8 +4,9 @@ description: "Can Tdarr help us save any significant space on our constantly agi
 date: "2026-11-13T00:44:00.000Z"
 category: "homelab"
 author: "JD"
+image: "/uploads/2026-11-13-featured-hu-1a76fe26587c50c3.webp"
 featured: false
-draft: true
+draft: false
 ---
 
 # Can Tdarr Make Room on My 172 TB Plex Server? — Part 1
@@ -40,7 +41,7 @@ I know enough to be dangerous, guys.
 
 * **19 storage drives** in the Unraid server, with **123 TB used out of 172 TB**.
 * **One GPU already in the Unraid server** for Plex. That’s where I’m leaning toward running the Tdarr Server, and I may use that GPU for a local node as well.
-* **Five other GPUs** I could put to work on Tdarr nodes.
+* **Potential Five other GPUs** I could put to work on Tdarr nodes.
 
 This is my first go with Tdarr. Part 1 is the starting point. In Part 2, I’ll show which hardware I actually used, what settings I landed on, and what happened to file size, picture quality, and Plex playback.
 I’d love to get the settings right the first time. I’d love even more to find out I got them wrong on five files instead of five thousand.
