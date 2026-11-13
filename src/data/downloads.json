@@ -55,11 +55,11 @@
       "group": "GPU drivers",
       "note": "Linux x86-64",
       "page": "https://www.nvidia.com/en-us/drivers/unix/",
-      "version": "595.104.02",
-      "date": "",
+      "version": "620.70.06",
+      "date": "2026-11-13T00:38:19.405Z",
       "url": "",
-      "found": "2026-11-12T03:19:20.971Z",
-      "file": "https://download.nvidia.com/XFree86/Linux-x86_64/595.104.02/NVIDIA-Linux-x86_64-595.104.02.run",
+      "found": "2026-11-13T00:38:19.405Z",
+      "file": "https://download.nvidia.com/XFree86/Linux-x86_64/620.70.06/NVIDIA-Linux-x86_64-620.70.06.run",
       "fileLabel": ".run installer"
     },
     {
@@ -195,11 +195,11 @@
       "group": "Media & network",
       "note": "All platforms",
       "page": "https://tailscale.com/download",
-      "version": "1.104.6",
-      "date": "",
+      "version": "1.104.7",
+      "date": "2026-11-13T00:38:19.405Z",
       "url": "https://tailscale.com/changelog",
-      "found": "2026-11-12T03:19:20.971Z",
-      "file": "https://pkgs.tailscale.com/stable/tailscale-setup-1.104.6.exe",
+      "found": "2026-11-13T00:38:19.405Z",
+      "file": "https://pkgs.tailscale.com/stable/tailscale-setup-1.104.7.exe",
       "fileLabel": "Windows installer"
     },
     {
