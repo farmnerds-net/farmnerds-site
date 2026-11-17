@@ -209,11 +209,11 @@
       "group": "Bench tools",
       "note": "Bootable USB maker (Windows)",
       "page": "https://rufus.ie/",
-      "version": "4.15",
-      "date": "2026-06-30T11:28:34Z",
-      "url": "https://github.com/pbatard/rufus/releases/tag/v4.15",
-      "found": "2026-11-12T03:19:20.971Z",
-      "file": "https://github.com/pbatard/rufus/releases/download/v4.15/rufus-4.15.exe",
+      "version": "4.16",
+      "date": "2026-11-17T13:02:46Z",
+      "url": "https://github.com/pbatard/rufus/releases/tag/v4.16",
+      "found": "2026-11-17T20:22:09.411Z",
+      "file": "https://github.com/pbatard/rufus/releases/download/v4.16/rufus-4.16.exe",
       "fileLabel": "Windows app"
     },
     {
