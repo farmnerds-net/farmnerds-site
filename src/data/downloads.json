@@ -139,11 +139,11 @@
       "group": "Homelab & servers",
       "note": "amd64 netinst",
       "page": "https://www.debian.org/distrib/",
-      "version": "13.7.0",
-      "date": "2026-09-12T00:00:00.000Z",
+      "version": "13.8.0",
+      "date": "2026-11-21T00:00:00.000Z",
       "url": "",
-      "found": "2026-11-12T03:19:20.971Z",
-      "file": "https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/debian-13.7.0-amd64-netinst.iso",
+      "found": "2026-11-21T18:35:40.374Z",
+      "file": "https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/debian-13.8.0-amd64-netinst.iso",
       "fileLabel": "netinst ISO"
     },
     {
