@@ -69,11 +69,11 @@
       "group": "Homelab & servers",
       "note": "ISO installer",
       "page": "https://www.proxmox.com/en/downloads/proxmox-virtual-environment/iso",
-      "version": "9.2-1",
-      "date": "",
+      "version": "9.3-1",
+      "date": "2026-11-25T16:07:05.616Z",
       "url": "",
-      "found": "2026-11-12T03:20:51.889Z",
-      "file": "https://enterprise.proxmox.com/iso/proxmox-ve_9.2-1.iso",
+      "found": "2026-11-25T16:07:05.616Z",
+      "file": "https://enterprise.proxmox.com/iso/proxmox-ve_9.3-1.iso",
       "fileLabel": "ISO"
     },
     {
