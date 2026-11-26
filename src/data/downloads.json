@@ -55,11 +55,11 @@
       "group": "GPU drivers",
       "note": "Linux x86-64",
       "page": "https://www.nvidia.com/en-us/drivers/unix/",
-      "version": "620.70.06",
-      "date": "2026-11-13T00:38:19.405Z",
+      "version": "620.73.04",
+      "date": "2026-11-26T00:18:45.749Z",
       "url": "",
-      "found": "2026-11-13T00:38:19.405Z",
-      "file": "https://download.nvidia.com/XFree86/Linux-x86_64/620.70.06/NVIDIA-Linux-x86_64-620.70.06.run",
+      "found": "2026-11-26T00:18:45.749Z",
+      "file": "https://download.nvidia.com/XFree86/Linux-x86_64/620.73.04/NVIDIA-Linux-x86_64-620.73.04.run",
       "fileLabel": ".run installer"
     },
     {
